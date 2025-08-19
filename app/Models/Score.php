@@ -11,8 +11,11 @@ class Score extends Model
         'teacher_id',
         'subject_id',
         'type',
-        'label',     // ✅ add this
+        'label',
+        'quiz_id',      // add this
         'score',
+        'max_score',    // add this
+        'percentage',   // add this
     ];
 
     public function student()
