@@ -19,7 +19,7 @@ class Score extends Model
         'quiz_id',      
         'score',
         'max_score',    
-        'percentage',   
+        'percentage',  
     ];
 
     protected $casts = [
