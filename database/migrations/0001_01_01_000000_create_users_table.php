@@ -19,10 +19,7 @@ return new class extends Migration
         $table->boolean('first_login')->default(true);
         $table->timestamp('email_verified_at')->nullable();
         $table->string('role')->default('student'); // admin, teacher, student
-        $table->date('birthday')->nullable();
         $table->string('gender')->nullable(); // for students
-        $table->string('grade_level')->nullable();
-        $table->string('section')->nullable();
         $table->string('guardian_name')->nullable();
         $table->string('guardian_email')->nullable();
         $table->string('guardian_contact')->nullable();

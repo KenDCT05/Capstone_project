@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
 
         // Redirect to change-password if password has never been changed and role isn't admin
         if ($user->first_login && $user->role !== 'admin') {
-        return redirect()->route('password.change');
+        return redirect()->route('change-password.edit');
         }
 
         // Redirect to dashboard

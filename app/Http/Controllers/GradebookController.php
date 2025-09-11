@@ -54,9 +54,19 @@ class GradebookController extends Controller
             foreach ($row['scores'] as $label => $scoreValue) {
                 if ($scoreValue === '' || $scoreValue === null) continue;
 
-                $type = str_contains(strtolower($label), 'quiz') ? 'quiz' :
-                        (str_contains(strtolower($label), 'exam') ? 'exam' : 'activity');
+                // ✅ Auto-detect type
+                $labelLower = strtolower($label);
+                if (str_contains($labelLower, 'quiz')) {
+                    $type = 'quiz';
+                } elseif (str_contains($labelLower, 'exam')) {
+                    $type = 'exam';
+                } elseif (str_contains($labelLower, 'attendance') || str_contains($labelLower, 'character')) {
+                    $type = 'attendance';
+                } else {
+                    $type = 'activity';
+                }
 
+                // ✅ Save actual score
                 Score::updateOrCreate([
                     'student_id' => $studentId,
                     'teacher_id' => $teacherId,
@@ -66,18 +76,42 @@ class GradebookController extends Controller
                     'type' => $type,
                     'score' => $scoreValue,
                 ]);
+
+                // ✅ Always enforce activity max = 100
+                if ($type === 'activity') {
+                    MaxScore::updateOrCreate([
+                        'subject_id' => $subjectId,
+                        'label' => $label,
+                    ], [
+                        'max_score' => 100,
+                    ]);
+                }
             }
         }
 
+        // ✅ Still allow teacher to set max scores for quizzes/exams
         foreach ($maxScores as $label => $max) {
             if ($max === '' || $max === null) continue;
 
-            MaxScore::updateOrCreate([
-                'subject_id' => $subjectId,
-                'label' => $label,
-            ], [
-                'max_score' => $max,
-            ]);
+            $labelLower = strtolower($label);
+            if (str_contains($labelLower, 'quiz')) {
+                $type = 'quiz';
+            } elseif (str_contains($labelLower, 'exam')) {
+                $type = 'exam';
+            } elseif (str_contains($labelLower, 'attendance') || str_contains($labelLower, 'character')) {
+                $type = 'attendance';
+            } else {
+                $type = 'activity';
+            }
+
+            if ($type !== 'activity') { // 👈 Activities stay locked at 100
+                MaxScore::updateOrCreate([
+                    'subject_id' => $subjectId,
+                    'label' => $label,
+                ], [
+                    'max_score' => $max,
+                ]);
+            }
         }
 
         return response()->json(['message' => 'Scores and max scores updated']);

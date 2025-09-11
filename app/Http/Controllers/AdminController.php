@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-
+use App\Notifications\AccountCreatedNotification;
 class AdminController extends Controller
 {
     // ========= Dashboard Redirect Based on Role =========
@@ -68,57 +68,63 @@ public function teacherDashboard()
     }
 
     // ========= Register Users =========
-    public function registerTeacher(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'birthday' => 'required|date',
-            'contact_number' => 'required|string|max:20',
-        ]);
+public function registerTeacher(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'contact_number' => 'required|string|max:20',
+    ]);
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'birthday' => $request->birthday,
-            'contact_number' => $request->contact_number,
-            'role' => 'teacher',
-            'password' => Hash::make('GSSM2025'),
-        ]);
+    // Define default password first
+    $defaultPassword = 'GSSM2025';
 
-        return redirect()->route('admin.register.teacher')->with('success', 'Teacher registered successfully!');
-    }
+    // Create teacher
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'contact_number' => $request->contact_number,
+        'role' => 'teacher',
+        'password' => Hash::make($defaultPassword),
+    ]);
 
-    public function registerStudent(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'birthday' => 'required|date',
-            'gender' => 'required|in:male,female',
-            'grade_level' => 'required|string',
-            'section' => 'required|string',
-            'guardian_name' => 'required|string|max:255',
-            'guardian_email' => 'required|email',
-            'guardian_contact' => 'required|string|max:20',
-        ]);
+    // Send mail notification with login credentials
+    $user->notify(new AccountCreatedNotification($user->email, $defaultPassword));
 
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'birthday' => $request->birthday,
-            'gender' => $request->gender,
-            'grade_level' => $request->grade_level,
-            'section' => $request->section,
-            'guardian_name' => $request->guardian_name,
-            'guardian_email' => $request->guardian_email,
-            'guardian_contact' => $request->guardian_contact,
-            'role' => 'student',
-            'password' => Hash::make('GSSM2025'),
-        ]);
+    return redirect()->route('admin.register.teacher')->with('success', 'Teacher registered and credentials sent via email!');
+}
 
-        return redirect()->route('admin.register.student')->with('success', 'Student registered successfully!');
-    }
+
+public function registerStudent(Request $request)
+{
+    $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|unique:users,email',
+        'guardian_name' => 'required|string|max:255',
+        'guardian_email' => 'required|email',
+        'guardian_contact' => 'required|string|max:20',
+    ]);
+
+    // Define default password first
+    $defaultPassword = 'GSSM2025';
+
+    // Create student
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'guardian_name' => $request->guardian_name,
+        'guardian_email' => $request->guardian_email,
+        'guardian_contact' => $request->guardian_contact,
+        'role' => 'student',
+        'password' => Hash::make($defaultPassword),
+    ]);
+
+    // Send mail notification with login credentials
+    $user->notify(new AccountCreatedNotification($user->email, $defaultPassword));
+
+    return redirect()->route('admin.register.student')->with('success', 'Student registered and credentials sent via email!');
+}
+
 
     // ========= Assignment =========
     public function assignForm()

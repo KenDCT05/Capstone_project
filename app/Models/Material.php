@@ -15,6 +15,13 @@ class Material extends Model
         'title',
         'description',
         'file_path',
+        'is_activity', 
+        'due_date',   
+         'max_score', 
+    ];
+
+    protected $casts = [
+        'due_date' => 'datetime',
     ];
 
     public function teacher()
@@ -26,4 +33,23 @@ class Material extends Model
     {
         return $this->belongsTo(Subject::class);
     }
+
+    // Add relationship to submissions
+    public function submissions()
+    {
+        return $this->hasMany(StudentSubmission::class);
+    }
+
+    // Check if student has submitted
+    public function hasSubmission($studentId)
+    {
+        return $this->submissions()->where('student_id', $studentId)->exists();
+    }
+
+    // Get student's submission
+    public function getSubmission($studentId)
+    {
+        return $this->submissions()->where('student_id', $studentId)->first();
+    }
 }
+

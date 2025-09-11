@@ -1,24 +1,146 @@
 <x-guest-layout>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            font-family: 'Inter', sans-serif;
+        .login-header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
-        
-        body {
-            background: linear-gradient(135deg, #7c2d12 0%, #dc2626 25%, #be185d  75%, #7c2d12 100%);
-            min-height: 100vh;
+
+        .login-header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(135deg, #dc2626, #991b1b, #7f1d1d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.025em;
+        }
+
+        .login-header p {
+            color: #6b7280;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .status-message {
+            background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+            color: #166534;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #86efac;
             position: relative;
-            overflow-x: hidden;
+            overflow: hidden;
         }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+
+        .status-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #22c55e;
         }
-        
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.75rem;
+            display: block;
+            transition: color 0.2s ease;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            font-size: 1rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-input:focus {
+            border-color: #dc2626;
+            outline: none;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-input:focus + .input-label {
+            color: #dc2626;
+        }
+
+        .form-input::placeholder {
+            color: #9ca3af;
+            font-weight: 400;
+        }
+
+        /* Password input with eye icon */
+        .password-input {
+            padding-right: 3.5rem;
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+            color: #6b7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .password-toggle:hover {
+            color: #dc2626;
+            background: rgba(220, 38, 38, 0.1);
+        }
+
+        .password-toggle svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-top: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .error-message::before {
+            content: '⚠';
+            font-size: 1rem;
+        }
+
+        /* Password Strength Meter */
         .strength-meter {
             height: 6px;
             background: #f3f4f6;
@@ -27,254 +149,302 @@
             margin-top: 8px;
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
-        
+
         .strength-fill {
             height: 100%;
             transition: all 0.4s ease;
             border-radius: 3px;
         }
-        
-        .input-shimmer {
+
+        .strength-text {
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        /* Password Requirements */
+        .requirements-box {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .requirements-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 0.75rem;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            transition: all 0.3s ease;
+        }
+
+        .requirement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .requirement-icon {
+            width: 1rem;
+            height: 1rem;
+            margin-right: 0.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.625rem;
+            transition: all 0.3s ease;
+        }
+
+        .requirement-met {
+            color: #10b981;
+        }
+
+        .requirement-met .requirement-icon {
+            background: #10b981;
+            color: white;
+            border-color: #10b981;
+        }
+
+        /* Match indicator */
+        .match-text {
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        /* Button styling */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #dc2626, #991b1b, #7f1d1d);
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            border: none;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
             position: relative;
             overflow: hidden;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
         }
-        
-        .input-shimmer::before {
+
+        .login-btn::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
-            transition: left 0.6s;
-            z-index: 1;
-            pointer-events: none;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
         }
-        
-        .input-shimmer:focus-within::before {
+
+        .login-btn:hover {
+            background: linear-gradient(135deg, #991b1b, #7f1d1d, #dc2626);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
+        }
+
+        .login-btn:hover::before {
             left: 100%;
         }
-        
-        .floating-particles {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 0;
+
+        .login-btn:active {
+            transform: translateY(0px);
         }
-        
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: particle-float 15s infinite linear;
-        }
-        
-        @keyframes particle-float {
-            0% { 
-                transform: translateY(100vh) translateX(0) rotate(0deg);
-                opacity: 0;
-            }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { 
-                transform: translateY(-100px) translateX(100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        
-        .success-pulse {
-            animation: success-pulse 0.6s ease-out;
-        }
-        
-        @keyframes success-pulse {
-            0% { transform: scale(0.8); opacity: 0; }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .requirement-check {
-            transition: all 0.3s ease;
-        }
-        
-        .requirement-met {
-            color: #10b981;
-        }
-        
-        .requirement-met .check-icon {
-            background: #10b981;
+
+        /* Secondary button style */
+        .secondary-btn {
+            background: linear-gradient(135deg, #6b7280, #4b5563);
             color: white;
-            border-radius: 50%;
+            width: 100%;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            border-radius: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            text-decoration: none;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .secondary-btn:hover {
+            background: linear-gradient(135deg, #4b5563, #374151);
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px -5px rgba(107, 114, 128, 0.4);
+        }
+
+        .secondary-btn:active {
+            transform: translateY(0px);
+        }
+
+        /* Side-by-side buttons on larger screens */
+        @media (min-width: 480px) {
+            .button-container {
+                flex-direction: row;
+                gap: 1rem;
+            }
+            
+            .login-btn,
+            .secondary-btn {
+                flex: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .login-header h1 {
+                font-size: 2rem;
+            }
+            
+            .login-header {
+                margin-bottom: 2.5rem;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .login-header h1 {
+                font-size: 1.75rem;
+            }
+
+            .form-group {
+                margin-bottom: 1.25rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+            }
         }
     </style>
 
-    <!-- Floating Particles Background -->
-    <div class="floating-particles">
-        <div class="particle" style="left: 10%; width: 4px; height: 4px; animation-delay: 0s;"></div>
-        <div class="particle" style="left: 20%; width: 6px; height: 6px; animation-delay: 2s;"></div>
-        <div class="particle" style="left: 30%; width: 3px; height: 3px; animation-delay: 4s;"></div>
-        <div class="particle" style="left: 40%; width: 5px; height: 5px; animation-delay: 6s;"></div>
-        <div class="particle" style="left: 60%; width: 4px; height: 4px; animation-delay: 8s;"></div>
-        <div class="particle" style="left: 70%; width: 7px; height: 7px; animation-delay: 10s;"></div>
-        <div class="particle" style="left: 80%; width: 3px; height: 3px; animation-delay: 12s;"></div>
-        <div class="particle" style="left: 90%; width: 5px; height: 5px; animation-delay: 14s;"></div>
+    <div class="login-header">
+        <h1>Change Password</h1>
+        <p>Secure your account with a strong new password</p>
     </div>
 
-    <div class="min-h-screen flex items-center justify-center p-4 relative z-10">
-        <!-- Password Change Form Section -->
-        <div class="w-full max-w-md">
-            <div class="glass-effect shadow-2xl rounded-3xl overflow-hidden border border-white/20 ">
-                <div class="bg-gradient-to-br from-red-600 via-red-700 to-pink-600 px-8 py-8 relative">
-                    <!-- Animated background pattern -->
-                    <div class="absolute inset-0 opacity-20">
-                        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 animate-pulse"></div>
-                    </div>
-                    
-                    <div class="relative z-10 text-center">
-                        <div class="w-20 h-20 bg-white/20 rounded-2xl flex items-center justify-center mx-auto mb-4 backdrop-blur-sm transform hover:scale-110 transition-transform duration-300">
-                            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-3xl font-bold text-white mb-2">Change Your Password</h2>
-                        <p class="text-white/90 text-sm">Secure your account with a strong new password</p>
-                    </div>
-                </div>
-                
-                <div class="p-8">
-                    @if(session('success'))
-                        <div class="mb-6 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 text-green-800 rounded-xl flex items-center success-pulse">
-                            <div class="w-6 h-6 mr-3 flex-shrink-0 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
-                                </svg>
-                            </div>
-                            <span class="font-medium">{{ session('success') }}</span>
-                        </div>
-                    @endif
+    @if(session('success'))
+        <div class="status-message">
+            {{ session('success') }}
+        </div>
+    @endif
 
-                    <form method="POST" action="{{ route('password.update') }}">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="space-y-6">
-                            <div class="group">
-                                <label class="block text-sm font-semibold text-gray-800 mb-3">
-                                    <svg class="w-4 h-4 inline mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                    </svg>
-                                    New Password *
-                                </label>
-                                <div class="input-shimmer relative">
-                                    <input type="password" 
-                                           name="password" 
-                                           id="password"
-                                           required 
-                                           oninput="checkPasswordStrength(this.value)"
-                                           class="w-full px-4 py-4 pr-12 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-300 outline-none text-gray-800 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md" 
-                                           placeholder="Enter your new password...">
-                                    <button type="button" 
-                                            onclick="togglePassword('password')"
-                                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-600 transition-colors duration-200 z-10">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-password">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                
-                                <!-- Password Strength Meter -->
+    <form method="POST" action="{{ route('change-password.update') }}">
+        @csrf
+        @method('PUT')
 
-                                @error('password')
-                                    <p class="text-red-600 text-sm mt-2 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                                
-                                <!-- Password Requirements -->
-                                
-                            </div>
-                            
-                            <div class="group">
-                                <label class="block text-sm font-semibold text-gray-800 mb-3">
-                                    <svg class="w-4 h-4 inline mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                                    </svg>
-                                    Confirm New Password *
-                                </label>
-                                <div class="input-shimmer relative">
-                                    <input type="password" 
-                                           name="password_confirmation" 
-                                           id="password_confirmation"
-                                           required 
-                                           oninput="checkPasswordMatch()"
-                                           class="w-full px-4 py-4 pr-12 border-2 border-gray-200 rounded-xl focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-300 outline-none text-gray-800 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md" 
-                                           placeholder="Confirm your new password...">
-                                    <button type="button" 
-                                            onclick="togglePassword('password_confirmation')"
-                                            class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-red-600 transition-colors duration-200 z-10">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-password_confirmation">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                        </svg>
-                                    </button>
-                                </div>
-                                <p id="matchText" class="text-xs text-gray-500 mt-1"></p>
-                                @error('password_confirmation')
-                                    <p class="text-red-600 text-sm mt-2 flex items-center">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-                            
-                            <div class="pt-4">
-                                <button type="submit" 
-                                        class="w-full bg-gradient-to-r from-red-600 via-red-700 to-pink-600 hover:from-red-700 hover:via-red-800 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-xl flex items-center justify-center group">
-                                    <svg class="w-5 h-5 mr-2 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span class="group-hover:tracking-wide transition-all duration-300">Change Password</span>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    
-                    <!-- Enhanced Security Tips -->
-                    <div class="strength-meter">
-                    <div id="strengthBar" class="strength-fill bg-gray-300" style="width: 0%"></div>
-                    </div>
-                    <p id="strengthText" class="text-xs text-gray-500 mt-1">Password strength will be shown here</p>
-                                
-                    <div class="mt-3 p-4 bg-gray-50 rounded-xl border border-gray-100">
-                                    <p class="text-xs font-semibold text-gray-700 mb-2">Password Requirements:</p>
-                                    <div class="space-y-1 text-xs">
-                                        <div id="req-length" class="flex items-center requirement-check text-gray-500">
-                                            <span class="w-4 h-4 mr-2 flex items-center justify-center border border-gray-300 rounded-full text-xs check-icon">✓</span>
-                                            At least 8 characters
-                                        </div>
-                                        <div id="req-uppercase" class="flex items-center requirement-check text-gray-500">
-                                            <span class="w-4 h-4 mr-2 flex items-center justify-center border border-gray-300 rounded-full text-xs check-icon">✓</span>
-                                            One uppercase letter
-                                        </div>
-                                        <div id="req-lowercase" class="flex items-center requirement-check text-gray-500">
-                                            <span class="w-4 h-4 mr-2 flex items-center justify-center border border-gray-300 rounded-full text-xs check-icon">✓</span>
-                                            One lowercase letter
-                                        </div>
-                                        <div id="req-number" class="flex items-center requirement-check text-gray-500">
-                                            <span class="w-4 h-4 mr-2 flex items-center justify-center border border-gray-300 rounded-full text-xs check-icon">✓</span>
-                                            One number
-                                        </div>
-                                    </div>
-                                </div>
-                </div>
+        <div class="form-group">
+            <label for="password" class="input-label">New Password</label>
+            <div class="input-container">
+                <input 
+                    id="password" 
+                    name="password" 
+                    type="password" 
+                    class="form-input password-input text-black" 
+                    required 
+                    placeholder="Enter your new password"
+                    oninput="checkPasswordStrength(this.value)"
+                >
+                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                    <svg id="eye-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
             </div>
+            
+            <!-- Password Strength Meter -->
+            <div class="strength-meter">
+                <div id="strengthBar" class="strength-fill" style="width: 0%; background-color: #d1d5db;"></div>
+            </div>
+            <p id="strengthText" class="strength-text">Password strength will be shown here</p>
+            
+            <!-- Password Requirements -->
+  
+            @error('password')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password_confirmation" class="input-label">Confirm New Password</label>
+            <div class="input-container">
+                <input 
+                    id="password_confirmation" 
+                    name="password_confirmation" 
+                    type="password" 
+                    class="form-input password-input text-black" 
+                    required 
+                    placeholder="Confirm your new password"
+                    oninput="checkPasswordMatch()"
+                >
+                <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
+                    <svg id="eye-password_confirmation" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </button>
+            </div>
+            <p id="matchText" class="match-text"></p>
+            @error('password_confirmation')
+                <div class="error-message">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="button-container">
+            <button type="submit" class="login-btn">
+                Change Password
+            </button>
+            <a href="{{ url()->previous() }}" class="secondary-btn">
+                Go Back
+            </a>
+        </div>
+    </form>
+
+    <!-- Password Requirements -->
+    <div class="requirements-box">
+        <p class="requirements-title">Password Requirements:</p>
+        <div class="requirement-item" id="req-length">
+            <span class="requirement-icon">✓</span>
+            At least 8 characters
+        </div>
+        <div class="requirement-item" id="req-uppercase">
+            <span class="requirement-icon">✓</span>
+            One uppercase letter
+        </div>
+        <div class="requirement-item" id="req-lowercase">
+            <span class="requirement-icon">✓</span>
+            One lowercase letter
+        </div>
+        <div class="requirement-item" id="req-number">
+            <span class="requirement-icon">✓</span>
+            One number
         </div>
     </div>
 
@@ -370,4 +540,4 @@
             }
         }
     </script>
-</x-guest-layout> 
+</x-guest-layout>
