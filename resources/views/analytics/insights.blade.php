@@ -11,7 +11,7 @@
                         </svg>
                         Performance Insights – {{ $student->name }}
                     </h1>
-                    <p class="text-red-100 mt-2">Comprehensive Student Performance Analysis with Transmuted Grades</p>
+                    <p class="text-red-100 mt-2">Comprehensive Student Performance Analysis with  Grades</p>
                 </div>
                 <div class="px-8 py-6 flex flex-wrap items-center justify-between gap-4">
                     <a href="{{ route('analytics.dashboard') }}"
@@ -91,11 +91,11 @@
                                             Excellent
                                         @elseif($overallStats['overall_average_transmuted'] >= 92)
                                             Very Good
-                                        @elseif($overallStats['overall_average_transmuted'] >= 84)
+                                        @elseif($overallStats['overall_average_transmuted'] >= 88)
                                             Good
-                                        @elseif($overallStats['overall_average_transmuted'] >= 75)
+                                        @elseif($overallStats['overall_average_transmuted'] >= 84)
                                             Fair
-                                        @elseif($overallStats['overall_average_transmuted'] >= 60)
+                                        @elseif($overallStats['overall_average_transmuted'] >= 75)
                                             Passed
                                         @else
                                             Failed
@@ -129,7 +129,7 @@
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">Strengths</p>
                             <p class="text-5xl font-black text-gray-900">{{ count($overallStats['strengths']) }}</p>
-                            <p class="text-gray-500 text-xs mt-1">90+ transmuted avg</p>
+                            <p class="text-gray-500 text-xs mt-1">90+ Percentage avg</p>
                         </div>
                         <div class="text-5xl opacity-60 group-hover:scale-110 group-hover:opacity-80 transition-all duration-300">💪</div>
                     </div>
@@ -141,7 +141,7 @@
                         <div>
                             <p class="text-gray-600 text-sm font-medium uppercase tracking-wider mb-2">Needs Support</p>
                             <p class="text-5xl font-black text-gray-900">{{ count($overallStats['needs_improvement']) }}</p>
-                            <p class="text-gray-500 text-xs mt-1">&lt;75 transmuted avg</p>
+                            <p class="text-gray-500 text-xs mt-1">&lt;75 Percentage avg</p>
                         </div>
                         <div class="text-5xl opacity-60 group-hover:scale-110 group-hover:opacity-80 transition-all duration-300">📈</div>
                     </div>
@@ -210,7 +210,7 @@
                                         <span class="font-semibold text-green-800">{{ $strength }}</span>
                                     </div>
                                     <span class="bg-green-200 text-green-800 px-3 py-1 rounded-full text-xs font-bold">
-                                        90+ Transmuted
+                                        90+ Percentage
                                     </span>
                                 </div>
                             @endforeach
@@ -223,7 +223,7 @@
                     @else
                         <div class="text-center py-12">
                             <div class="text-6xl mb-4">🎯</div>
-                            <p class="text-gray-500 italic text-lg">No subjects with 90+ transmuted average yet.</p>
+                            <p class="text-gray-500 italic text-lg">No subjects with 90+ Percentage average yet.</p>
                             <p class="text-gray-400 text-sm mt-2">Keep working towards excellence!</p>
                         </div>
                     @endif
@@ -262,7 +262,7 @@
                     @else
                         <div class="text-center py-12">
                             <div class="text-6xl mb-4">🎉</div>
-                            <p class="text-gray-500 italic text-lg">All subjects above 75 transmuted - Excellent work!</p>
+                            <p class="text-gray-500 italic text-lg">All subjects above 75 Percentage - Excellent work!</p>
                             <p class="text-gray-400 text-sm mt-2">Keep maintaining this great performance.</p>
                         </div>
                     @endif
@@ -372,7 +372,7 @@
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Assessment</th>
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Score</th>
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Raw %</th>
-                                            <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Transmuted</th>
+                                            <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Grades</th>
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Letter</th>
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Performance</th>
                                             <th class="px-6 py-4 text-left font-bold uppercase tracking-wider">Date</th>
@@ -488,7 +488,7 @@
                                     @else
                                         <li class="flex items-start">
                                             <span class="text-blue-500 mr-2 mt-1">•</span>
-                                            <span class="text-gray-700">Prioritize subjects below 75 transmuted grade</span>
+                                            <span class="text-gray-700">Prioritize subjects below 75 Percentage grade</span>
                                         </li>
                                         <li class="flex items-start">
                                             <span class="text-blue-500 mr-2 mt-1">•</span>
@@ -578,7 +578,7 @@
                         labels: {!! json_encode($performance['assessments']->pluck('column_name')->toArray()) !!},
                         datasets: [
                             {
-                                label: 'Transmuted Grade',
+                                label: 'Grades',
                                 data: {!! json_encode($performance['assessments']->pluck('transmuted_grade')->toArray()) !!},
                                 borderColor: '#ef4444',
                                 backgroundColor: 'rgba(239, 68, 68, 0.1)',
@@ -643,7 +643,7 @@
                                     },
                                     label: function(context) {
                                         if (context.datasetIndex === 0) {
-                                            return 'Transmuted Grade: ' + context.parsed.y;
+                                            return 'Grades: ' + context.parsed.y;
                                         } else {
                                             return 'Raw Percentage: ' + context.parsed.y + '%';
                                         }

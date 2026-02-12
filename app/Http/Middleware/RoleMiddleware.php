@@ -13,8 +13,13 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
+        // Check if user is authenticated and has the required role
+        if (!auth()->check() || auth()->user()->role !== $role) {
+            abort(403, 'Access denied. You’re not authorized.');
+        }
+
         return $next($request);
     }
 }

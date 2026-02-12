@@ -3,104 +3,246 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             
             <!-- Header Section -->
-            <div class="bg-white rounded-2xl shadow-xl border border-red-100 p-8">
-                <div class="flex items-center mb-2">
-                    <div class="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center mr-4">
-                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            <div class="bg-white rounded-2xl shadow-xl border border-red-100 mb-8 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 px-8 py-6">
+                    <h1 class="text-3xl font-bold text-white flex items-center">
+                        <svg class="w-8 h-8 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
-                    </div>
-                    <h1 class="text-3xl font-bold text-gray-900">Edit Quiz: {{ $quiz->title }}</h1>
+                        Title: {{ $quiz->title }}
+                    </h1>
+                    <p class="text-red-100 mt-2">Edit Quiz Settings</p>
                 </div>
-                <p class="text-gray-600 text-lg">Modify quiz settings and manage questions</p>
+                
+                <div class="px-8 py-6">
+                    <a href="{{ route('quizzes.index') }}" 
+                       class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 via-red-700 to-rose-700 hover:from-red-800 hover:to-red-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                        <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        </svg>
+                        <span class="font-medium">Quiz Dashboard</span>
+                    </a> 
+                </div>
             </div>
 
-            
-
-            <!-- Quiz Settings Form -->
+            <!-- RETAKE POLICY FORM SECTION -->
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 p-8">
                 <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                    <div class="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-lg mr-3"></div>
-                    Quiz Settings
+                    <div class="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg mr-3"></div>
+                    Quiz Settings & Retake Policy
                 </h2>
 
-                <form method="POST" action="{{ route('quizzes.update',$quiz) }}" class="space-y-6">
-                    @csrf @method('PUT')
-                    
-                    <!-- Subject and Title Row -->
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                </svg>
-                                Subject
-                            </label>
-                            <select name="subject_id" class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 hover:border-red-300 appearance-none">
-                                @foreach($subjects as $s)
-                                    <option value="{{ $s->id }}" @selected($quiz->subject_id==$s->id)>{{ $s->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                <form method="POST" action="{{ route('quizzes.update', $quiz) }}" class="space-y-8">
+                    @csrf
+                    @method('PUT')
 
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                                </svg>
-                                Quiz Title
-                                <span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <input name="title" 
-                                type="text"
-                                value="{{ $quiz->title }}"
-                                class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 hover:border-red-300 placeholder-gray-400" 
-                                required>
+                    <!-- Basic Quiz Settings (Read-Only Display) -->
+  <!-- Quiz Settings Display (Read-Only) -->
+            <div class="bg-white rounded-2xl shadow-xl border border-red-100 p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+                    <div class="w-8 h-8 bg-gradient-to-r from-gray-500 to-gray-600 rounded-lg mr-3"></div>
+                    Quiz Information
+                    <span class="ml-3 inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        Read Only
+                    </span>
+                </h2>
+
+                <!-- Read-only display of quiz settings -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            Subject
+                        </label>
+                        <div class="text-lg font-medium text-gray-900">{{ $quiz->subject->name ?? 'No Subject' }}</div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                            </svg>
+                            Quiz Title
+                        </label>
+                        <div class="text-lg font-medium text-gray-900">{{ $quiz->title }}</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 011-1h1m-1 1v1m-1-1h1m-1 1v1"></path>
+                            </svg>
+                            Quiz Type
+                        </label>
+                        <div class="text-lg font-medium text-gray-900 capitalize">{{ $quiz->type }}</div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Time Limit
+                        </label>
+                        <div class="text-lg font-medium text-gray-900">
+                            {{ $quiz->time_limit_seconds ? $quiz->time_limit_seconds . ' seconds' : 'No limit' }}
                         </div>
                     </div>
 
-                    <!-- Type and Time Settings -->
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 011-1h1m-1 1v1m-1-1h1m-1 1v1"></path>
-                                </svg>
-                                Quiz Type
-                            </label>
-                            <select name="type" class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 hover:border-red-300 appearance-none">
-                                @foreach(['quiz','exam','activity'] as $t)
-                                    <option value="{{ $t }}" @selected($quiz->type==$t)>
-                                        {{ ucfirst($t) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="bg-gray-50 rounded-xl p-4 border-2 border-gray-200">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 flex items-center">
+                            <svg class="w-5 h-5 text-gray-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Total Questions
+                        </label>
+                        <div class="text-lg font-medium text-gray-900">{{ $quiz->questions->count() }}</div>
+                    </div>
+                </div>
 
-                        <div>
-                            <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
-                                <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                </svg>
-                                Time Limit (seconds)
-                            </label>
-                            <input type="number" 
-                                name="time_limit_seconds" 
-                                value="{{ $quiz->time_limit_seconds }}"
-                                min="60"
-                                step="30"
-                                class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-red-400 focus:ring-4 focus:ring-red-100 transition-all duration-300 hover:border-red-300 placeholder-gray-400">
+                <!-- Note about locked settings -->
+                <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div class="flex items-center">
+                        <svg class="w-5 h-5 text-blue-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span class="text-sm text-blue-800 font-medium">
+                            Quiz settings are locked for editing. You can only add, remove, or modify questions.
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+                    <!-- Retake Policy Section -->
+                    <div class="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 border border-purple-200">
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                            <svg class="w-6 h-6 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            Retake Policy
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <!-- Max Attempts Row -->
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Max Attempts -->
+                                <div class="group">
+                                    <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                                        </svg>
+                                        Maximum Attempts
+                                    </label>
+                                    <input type="number" 
+                                           name="max_attempts" 
+                                           value="{{ old('max_attempts', $quiz->max_attempts ?? 1) }}"
+                                           min="0"
+                                           max="10"
+                                           class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 hover:border-purple-300">
+                                    <p class="text-xs text-gray-500 mt-2">Set to 0 for unlimited attempts</p>
+                                </div>
+
+                                <!-- Scoring Method -->
+                                <div class="group">
+                                    <label class="text-sm font-semibold text-gray-700 mb-3 flex items-center">
+                                        <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                        </svg>
+                                        Scoring Method
+                                    </label>
+                                    <select name="retake_scoring"
+                                            class="w-full border-2 border-gray-200 rounded-xl p-4 text-gray-900 bg-white focus:border-purple-400 focus:ring-4 focus:ring-purple-100 transition-all duration-300 hover:border-purple-300 appearance-none">
+                                        <option value="highest" {{ old('retake_scoring', $quiz->retake_scoring ?? 'highest') == 'highest' ? 'selected' : '' }}>
+                                            Highest Score
+                                        </option>
+                                        <option value="latest" {{ old('retake_scoring', $quiz->retake_scoring ?? '') == 'latest' ? 'selected' : '' }}>
+                                            Latest Attempt
+                                        </option>
+                                        <option value="average" {{ old('retake_scoring', $quiz->retake_scoring ?? '') == 'average' ? 'selected' : '' }}>
+                                            Average of All Attempts
+                                        </option>
+                                        <option value="first" {{ old('retake_scoring', $quiz->retake_scoring ?? '') == 'first' ? 'selected' : '' }}>
+                                            First Attempt Only
+                                        </option>
+                                    </select>
+                                    <p class="text-xs text-gray-500 mt-2">Which score to record in gradebook</p>
+                                </div>
+                            </div>
+
+
+                            <!-- Additional Options -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <!-- Show Previous Answers -->
+                                <label class="flex items-start p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-300 cursor-pointer transition-all duration-300 group">
+                                    <input type="checkbox" 
+                                           name="show_previous_answers" 
+                                           value="1" 
+                                           {{ old('show_previous_answers', $quiz->show_previous_answers ?? false) ? 'checked' : '' }}
+                                           class="w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mt-1">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
+                                            Show Previous Answers
+                                        </span>
+                                        <p class="text-xs text-gray-500 mt-1">Students can review their mistakes when retaking</p>
+                                    </div>
+                                </label>
+
+                                <!-- Require Passing Grade -->
+                                <label class="flex items-start p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-purple-300 cursor-pointer transition-all duration-300 group">
+                                    <input type="checkbox" 
+                                           name="require_pass_all" 
+                                           value="1" 
+                                           {{ old('require_pass_all', $quiz->require_pass_all ?? false) ? 'checked' : '' }}
+                                           class="w-5 h-5 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2 mt-1">
+                                    <div class="ml-3">
+                                        <span class="text-sm font-medium text-gray-900 group-hover:text-purple-600 transition-colors duration-300">
+                                            Require Passing (75%)
+                                        </span>
+                                        <p class="text-xs text-gray-500 mt-1">No retakes allowed after passing</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Info Box -->
+                            <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
+                                <div class="flex items-start">
+                                    <svg class="w-6 h-6 text-blue-500 mr-3 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div class="text-sm text-blue-800">
+                                        <strong class="font-semibold">Retake Policy Examples:</strong>
+                                        <ul class="mt-2 space-y-1 list-disc list-inside">
+                                            <li><strong>Practice Quiz:</strong> Unlimited attempts, highest score, show previous answers</li>
+                                            <li><strong>Final Exam:</strong> 1 attempt only</li>
+                                            <li><strong>Certification:</strong> 3 attempts max, 24-hour cooldown, require passing</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
+                    <!-- Save Button -->
                     <div class="flex gap-4 pt-6 border-t border-gray-200">
                         <button type="submit" 
-                                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
+                                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h2m0 0h9a2 2 0 002-2v-9a2 2 0 00-2-2h-2m0 0V5a2 2 0 00-2-2H9a2 2 0 00-2 2v2m0 0h4v4m-6 8h10v-5"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            Save Quiz Settings
+                            Save Retake Policy
                         </button>
+                        
+                        <a href="{{ route('quizzes.index') }}" 
+                           class="inline-flex items-center px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl border-2 border-gray-200 hover:border-gray-300 transition-all duration-300">
+                            Cancel
+                        </a>
                     </div>
                 </form>
             </div>
@@ -265,8 +407,8 @@
                     </div>
 
                     <!-- True/False Options -->
-<!-- True/False Options - FIXED VERSION -->
-<div x-show="questionType === 'tf'" class="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-6 border border-green-200">
+<!-- True/False Options - COLOR RESPONSIVE VERSION -->
+<div x-show="questionType === 'tf'" class="bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-6 border border-green-200" x-data="{ selectedTF: 'true' }">
     <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
         <svg class="w-6 h-6 text-green-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -276,29 +418,47 @@
     
     <div class="grid grid-cols-2 gap-4">
         <!-- True Option -->
-        <div class="flex items-center justify-center p-6 bg-white border-2 rounded-xl cursor-pointer transition-all duration-300 border-green-500 bg-green-100">
+        <label class="cursor-pointer">
             <input type="radio" 
                    name="correct_answer_tf" 
                    value="true" 
+                   @change="selectedTF = 'true'"
                    checked
-                   class="w-5 h-5 text-green-600 bg-gray-100 border-gray-300 focus:ring-green-500 focus:ring-2 mr-3">
-            <svg class="w-8 h-8 text-green-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-            </svg>
-            <span class="text-xl font-bold text-gray-900">True</span>
-        </div>
+                   class="sr-only">
+            <div class="flex items-center justify-center p-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                 :class="selectedTF === 'true' ? 
+                     'bg-green-100 border-2 border-green-500 shadow-lg shadow-green-200' : 
+                     'bg-white border-2 border-gray-200 hover:bg-green-50 hover:border-green-200'">
+                <svg class="w-8 h-8 mr-3 transition-colors duration-300" 
+                     :class="selectedTF === 'true' ? 'text-green-600' : 'text-gray-400'"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                <span class="text-xl font-bold transition-colors duration-300"
+                      :class="selectedTF === 'true' ? 'text-green-800' : 'text-gray-700'">True</span>
+            </div>
+        </label>
         
         <!-- False Option -->
-        <div class="flex items-center justify-center p-6 bg-white border-2 rounded-xl cursor-pointer transition-all duration-300 border-gray-200 hover:bg-red-50">
+        <label class="cursor-pointer">
             <input type="radio" 
                    name="correct_answer_tf" 
                    value="false"
-                   class="w-5 h-5 text-red-600 bg-gray-100 border-gray-300 focus:ring-red-500 focus:ring-2 mr-3">
-            <svg class="w-8 h-8 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-            <span class="text-xl font-bold text-gray-900">False</span>
-        </div>
+                   @change="selectedTF = 'false'"
+                   class="sr-only">
+            <div class="flex items-center justify-center p-6 rounded-xl transition-all duration-300 transform hover:scale-105"
+                 :class="selectedTF === 'false' ? 
+                     'bg-red-100 border-2 border-red-500 shadow-lg shadow-red-200' : 
+                     'bg-white border-2 border-gray-200 hover:bg-red-50 hover:border-red-200'">
+                <svg class="w-8 h-8 mr-3 transition-colors duration-300" 
+                     :class="selectedTF === 'false' ? 'text-red-600' : 'text-gray-400'"
+                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+                <span class="text-xl font-bold transition-colors duration-300"
+                      :class="selectedTF === 'false' ? 'text-red-800' : 'text-gray-700'">False</span>
+            </div>
+        </label>
     </div>
 </div>
 

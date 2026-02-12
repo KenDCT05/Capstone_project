@@ -2,54 +2,50 @@
     <div class="min-h-screen bg-gradient-to-br from-red-100 via-pink-50 to-red-200 py-8">
         <div class="max-w-7xl mx-auto px-4">
             <!-- Header Section -->
-<div class="bg-white rounded-3xl shadow-2xl border-4 border-red-200 mb-12 overflow-hidden">
-    
-    <!-- Header Section -->
-    <div class="text-center bg-red-700 p-8">
-        <div class="inline-flex items-center justify-center w-20 h-20 bg-red-500 rounded-full mb-4 shadow-lg animate-bounce mx-auto">
-            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-        </div>
-        <h1 class="text-5xl font-black text-white mb-2 drop-shadow-lg">My Learning Materials! 📚</h1>
-        <p class="text-xl text-red-100 font-semibold">Find all your awesome study materials here!</p>
-    </div>
+            <div class="bg-white rounded-3xl shadow-2xl border-4 border-red-200 mb-12 overflow-hidden">
+                
+                <!-- Header Section -->
+                <div class="text-center bg-red-500 p-8">
+                    <div class="inline-flex items-center justify-center w-20 h-20 bg-red-500 rounded-full mb-4 shadow-lg animate-bounce mx-auto">
+                        <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                    </div>
+                    <h1 class="text-5xl font-black text-white mb-2 drop-shadow-lg">My Learning Materials! </h1>
+                    <p class="text-xl text-red-100 font-semibold">Find all your awesome study materials here!</p>
+                </div>
 
-    <!-- Content Section -->
-    <div class="p-6">
-        <form method="GET" class="flex items-center gap-4 flex-wrap">
-            
-            <!-- Back Button -->
-            <a href="{{ route('dashboard') }}" 
-               class="inline-flex items-center text-lg font-bold text-red-700 bg-red-50 border-2 border-red-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 shadow-md hover:bg-red-100 transition-all duration-200 cursor-pointer">
-                <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" 
-                     fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                          d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span class="font-medium">Dashboard</span>
-            </a>
+                <!-- Content Section -->
+                <div class="p-6">
+                    <form method="GET" class="flex items-center gap-4 flex-wrap">
+                        
+                        <!-- Back Button -->
+                        <a href="{{ route('dashboard') }}" 
+                           class="inline-flex items-center text-lg font-bold text-red-700 bg-red-50 border-2 border-red-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 shadow-md hover:bg-red-100 transition-all duration-200 cursor-pointer">
+                            <svg class="w-5 h-5 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" 
+                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                            <span class="font-medium">Dashboard</span>
+                        </a>
 
-            <!-- Dropdown -->
-            <select name="subject_id" 
-                    onchange="this.form.submit()" 
-                    class="text-lg font-bold text-red-700 bg-red-50 border-2 border-red-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 shadow-md hover:bg-red-100 transition-all duration-200 cursor-pointer">
-                <option value="">🌈 All Subjects</option>
-                @foreach($subjects as $subject)
-                    <option value="{{ $subject->id }}" {{ $selectedSubject == $subject->id ? 'selected' : '' }}>
-                        📖 {{ $subject->name }}
-                    </option>
-                @endforeach
-            </select>
-        </form>
-    </div>
+                        <!-- Dropdown -->
+                        <select name="subject_id" 
+                                onchange="this.form.submit()" 
+                                class="text-lg font-bold text-red-700 bg-red-50 border-2 border-red-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-400 shadow-md hover:bg-red-100 transition-all duration-200 cursor-pointer">
+                            <option value="">All Subjects</option>
+                            @foreach($subjects as $subject)
+                                <option value="{{ $subject->id }}" {{ $selectedSubject == $subject->id ? 'selected' : '' }}>
+                                     {{ $subject->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </div>
 
-</div>
-
-
-
-
+            </div>
 
             <!-- Materials Grid -->
             <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -103,9 +99,9 @@
                             <!-- Teacher & Date Info -->
                             <div class="space-y-3 mb-6">
                                 <div class="flex items-center justify-center bg-gradient-to-r from-pink-100 to-red-100 rounded-2xl p-3 border-2 border-pink-200">
-                                    <div class="w-10 h-10 bg-red-400 rounded-full flex items-center justify-center mr-3 shadow-md">
-                                        <span class="text-lg">👨‍🏫</span>
-                                    </div>
+                                    {{-- <div class="w-10 h-10 bg-red-400 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                        <span class="text-lg"></span>
+                                    </div> --}}
                                     <div class="text-left">
                                         <p class="text-xs font-bold text-red-500 uppercase tracking-wide">Teacher</p>
                                         <p class="text-sm font-black text-red-700">{{ $material->teacher->name }}</p>
@@ -113,9 +109,9 @@
                                 </div>
 
                                 <div class="flex items-center justify-center bg-gradient-to-r from-red-100 to-pink-100 rounded-2xl p-3 border-2 border-red-200">
-                                    <div class="w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center mr-3 shadow-md">
-                                        <span class="text-lg">📅</span>
-                                    </div>
+                                    {{-- <div class="w-10 h-10 bg-pink-400 rounded-full flex items-center justify-center mr-3 shadow-md">
+                                        <span class="text-lg"> </span>
+                                    </div> --}}
                                     <div class="text-left">
                                         <p class="text-xs font-bold text-red-500 uppercase tracking-wide">Uploaded</p>
                                         <p class="text-sm font-black text-red-700">{{ $material->created_at->format('M d, Y') }}</p>
@@ -124,99 +120,136 @@
                             </div>
 
                             <!-- Activity Badge & File Type Info -->
-                            <div class="space-y-3 mb-6">
-                                <!-- Activity Badge -->
-                                @if($material->is_activity)
-                                    <div class="bg-gradient-to-r from-orange-400 to-yellow-400 rounded-2xl p-3 border-2 border-orange-300 shadow-lg animate-pulse">
-                                        <div class="flex items-center justify-center">
-                                            <span class="text-2xl mr-2">⭐</span>
-                                            <span class="text-lg font-black text-white drop-shadow-md">SPECIAL ACTIVITY!</span>
-                                            <span class="text-2xl ml-2">⭐</span>
-                                        </div>
-                                    </div>
-                                @endif
+<!-- Updated section from student materials view showing submission status -->
+<!-- Activity Badge & File Type Info -->
+<div class="space-y-3 mb-6">
+    <!-- Activity Badge -->
+    @if($material->is_activity)
+        <div class="bg-gradient-to-r from-orange-400 to-yellow-400 rounded-2xl p-3 border-2 border-orange-300 shadow-lg animate-pulse">
+            <div class="flex items-center justify-center">
+                <span class="text-2xl mr-2">⭐</span>
+                <span class="text-lg font-black text-white drop-shadow-md">SPECIAL ACTIVITY!</span>
+                <span class="text-2xl ml-2">⭐</span>
+            </div>
+        </div>
+    @endif
 
-                                <!-- Due Date for Activities -->
-                                @if($material->is_activity && $material->due_date)
-                                    <div class="bg-gradient-to-r from-red-400 to-pink-400 rounded-2xl p-3 border-2 border-red-300 shadow-lg">
-                                        <div class="flex items-center justify-center">
-                                            <span class="text-xl mr-2">⏰</span>
-                                            <div class="text-center">
-                                                <p class="text-xs font-bold text-white uppercase tracking-wide">Due Date</p>
-                                                <p class="text-lg font-black text-white">{{ $material->due_date->format('M d, Y g:i A') }}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                @endif
+    <!-- Due Date for Activities -->
+    @if($material->is_activity && $material->due_date)
+        @php
+            $isOverdue = now() > $material->due_date;
+        @endphp
+        <div class="bg-gradient-to-r {{ $isOverdue ? 'from-red-500 to-red-600' : 'from-red-400 to-pink-400' }} rounded-2xl p-3 border-2 border-red-300 shadow-lg {{ $isOverdue ? 'animate-pulse' : '' }}">
+            <div class="flex items-center justify-center">
+                <span class="text-xl mr-2">{{ $isOverdue ? '⚠️' : '⏰' }}</span>
+                <div class="text-center">
+                    <p class="text-xs font-bold text-white uppercase tracking-wide">
+                        {{ $isOverdue ? 'WAS DUE' : 'DUE DATE' }}
+                    </p>
+                    <p class="text-lg font-black text-white">{{ $material->due_date->format('M d, Y g:i A') }}</p>
+                    @if($isOverdue)
+                        <p class="text-xs font-bold text-red-100 mt-1">OVERDUE - Late submissions allowed!</p>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
-                                <!-- File Type Info -->
-                                <div class="bg-gradient-to-r from-red-200 to-pink-200 rounded-2xl p-3 border-2 border-red-300">
-                                    <div class="flex items-center justify-center">
-                                        <svg class="w-6 h-6 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                        </svg>
-                                        <span class="text-lg font-black text-red-700">{{ $extension }} FILE</span>
-                                    </div>
-                                </div>
-                            </div>
+    <!-- File Type Info -->
+    <div class="bg-gradient-to-r from-red-200 to-pink-200 rounded-2xl p-3 border-2 border-red-300">
+        <div class="flex items-center justify-center">
+            <svg class="w-6 h-6 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span class="text-lg font-black text-red-700">{{ $extension }} FILE</span>
+        </div>
+    </div>
+</div>
 
-                            <!-- Submission Status for Activities -->
-                            @if($material->is_activity)
-                                @php
-                                    $submission = $material->submissions->first();
-                                @endphp
-                                <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-4 mb-6 border-2 border-purple-300 shadow-lg">
-                                    @if($submission)
-                                        <div class="text-center mb-3">
-                                            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full mb-2 shadow-lg">
-                                                <span class="text-xl">✅</span>
-                                            </div>
-                                            <h4 class="text-lg font-black text-purple-700">Your Submission</h4>
-                                        </div>
-                                        
-                                        <div class="space-y-2">
-                                            <!-- Status Badge -->
-                                            <div class="text-center">
-                                                <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold shadow-lg
-                                                    {{ $submission->status === 'late' ? 'bg-yellow-400 text-yellow-900' : 
-                                                       ($submission->status === 'reviewed' ? 'bg-green-400 text-green-900' : 'bg-blue-400 text-blue-900') }}">
-                                                    {{ $submission->status === 'late' ? '⚠️ LATE' : ($submission->status === 'reviewed' ? '✨ REVIEWED' : '📝 SUBMITTED') }}
-                                                </span>
-                                            </div>
-                                            
-                                            <!-- Submitted Date -->
-                                            <p class="text-center text-sm font-bold text-purple-600">
-                                                Submitted: {{ $submission->submitted_at->format('M d, Y g:i A') }}
-                                            </p>
-                                            
-                                            <!-- Grade -->
-                                            @if($submission->grade)
-                                                <div class="text-center bg-green-200 rounded-xl p-2 border-2 border-green-300">
-                                                    <p class="text-lg font-black text-green-700">
-                                                        🏆 Grade: {{ $submission->grade }}
-                                                    </p>
-                                                </div>
-                                            @endif
-                                            
-                                            <!-- Teacher Feedback -->
-                                            @if($submission->teacher_feedback)
-                                                <div class="bg-blue-200 rounded-xl p-3 border-2 border-blue-300">
-                                                    <p class="text-sm font-bold text-blue-600 mb-1">💬 Teacher Says:</p>
-                                                    <p class="text-sm font-semibold text-blue-700">{{ $submission->teacher_feedback }}</p>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @else
-                                        <div class="text-center">
-                                            <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r from-red-400 to-orange-400 rounded-full mb-2 shadow-lg animate-pulse">
-                                                <span class="text-xl">📋</span>
-                                            </div>
-                                            <h4 class="text-lg font-black text-red-600">Not Submitted Yet!</h4>
-                                            <p class="text-sm font-semibold text-red-500">Don't forget to submit your work!</p>
-                                        </div>
-                                    @endif
-                                </div>
-                            @endif
+<!-- ✅ UPDATED: Submission Status for Activities with Compound Status Display -->
+@if($material->is_activity)
+    @php
+        $submission = $material->submissions->first();
+        $isOverdue = $material->due_date && now() > $material->due_date;
+    @endphp
+    <div class="bg-gradient-to-r from-purple-100 to-blue-100 rounded-2xl p-4 mb-6 border-2 border-purple-300 shadow-lg">
+        @if($submission)
+            <div class="text-center mb-3">
+
+                <h4 class="text-lg font-black text-purple-700">Your Submission</h4>
+            </div>
+            
+            <div class="space-y-2">
+                <!-- ✅ UPDATED: Compound Status Badge Display -->
+                <div class="text-center space-y-2">
+                    @if($submission->status === 'late_reviewed')
+                        <!-- Show both Late and Reviewed badges -->
+                        <div class="flex justify-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-yellow-400 text-yellow-900 shadow-lg">
+                                 LATE SUBMISSION
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-400 text-green-900 shadow-lg">
+                                 REVIEWED & GRADED
+                            </span>
+                        </div>
+                    @elseif($submission->status === 'late')
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-yellow-400 text-yellow-900 shadow-lg">
+                             LATE SUBMISSION
+                        </span>
+                    @elseif($submission->status === 'reviewed')
+                        <!-- Show both On Time and Reviewed badges -->
+                        <div class="flex justify-center gap-2 flex-wrap">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-blue-400 text-blue-900 shadow-lg">
+                                 ON TIME
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold bg-green-400 text-green-900 shadow-lg">
+                                 REVIEWED & GRADED
+                            </span>
+                        </div>
+                    @else
+                        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-bold bg-blue-400 text-blue-900 shadow-lg">
+                             SUBMITTED ON TIME
+                        </span>
+                    @endif
+                </div>
+                
+                <!-- Submitted Date -->
+                <p class="text-center text-sm font-bold text-purple-600">
+                    Submitted: {{ $submission->submitted_at->format('M d, Y g:i A') }}
+                </p>
+                
+                <!-- Grade -->
+                @if($submission->grade)
+                    <div class="text-center bg-green-200 rounded-xl p-2 border-2 border-green-300">
+                        <p class="text-lg font-black text-green-700">
+                            🏆 Grade: {{ $submission->grade }}
+                        </p>
+                    </div>
+                @endif
+                
+                <!-- Teacher Feedback -->
+                @if($submission->teacher_feedback)
+                    <div class="bg-blue-200 rounded-xl p-3 border-2 border-blue-300">
+                        <p class="text-sm font-bold text-blue-600 mb-1">💬 Teacher Says:</p>
+                        <p class="text-sm font-semibold text-blue-700">{{ $submission->teacher_feedback }}</p>
+                    </div>
+                @endif
+            </div>
+        @else
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-r {{ $isOverdue ? 'from-yellow-500 to-orange-500' : 'from-red-400 to-orange-400' }} rounded-full mb-2 shadow-lg animate-pulse">
+                    <span class="text-xl">{{ $isOverdue ? '⏰' : '📋' }}</span>
+                </div>
+                <h4 class="text-lg font-black {{ $isOverdue ? 'text-yellow-600' : 'text-red-600' }}">
+                    {{ $isOverdue ? 'Overdue - Submit Now!' : 'Not Submitted Yet!' }}
+                </h4>
+                <p class="text-sm font-semibold {{ $isOverdue ? 'text-yellow-500' : 'text-red-500' }}">
+                    {{ $isOverdue ? 'Late submissions are allowed!' : "Don't forget to submit your work!" }}
+                </p>
+            </div>
+        @endif
+    </div>
+@endif
                         </div>
 
                         <!-- Action Buttons -->
@@ -234,6 +267,7 @@
                             @if($material->is_activity)
                                 @php
                                     $submission = $material->submissions->first();
+                                    $isOverdue = $material->due_date && now() > $material->due_date;
                                 @endphp
                                 @if($submission)
                                     <!-- View Submission Button -->
@@ -246,23 +280,16 @@
                                         <span class="drop-shadow-lg">VIEW MY WORK!</span>
                                     </a>
                                 @else
-                                    <!-- Submit Button or Past Due -->
-                                    @if($material->due_date && now() > $material->due_date)
-                                        <div class="w-full inline-flex items-center justify-center px-8 py-6 bg-gray-400 text-white text-2xl font-black rounded-3xl shadow-lg border-4 border-gray-300 cursor-not-allowed">
-                                            <svg class="w-10 h-10 mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                            </svg>
-                                            <span class="drop-shadow-lg">TIME'S UP! ⏰</span>
-                                        </div>
-                                    @else
-                                        <a href="{{ route('materials.student.submit', $material) }}" 
-                                           class="group/btn w-full inline-flex items-center justify-center px-8 py-6 bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white text-2xl font-black rounded-3xl shadow-2xl transform hover:scale-110 hover:rotate-1 transition-all duration-300 border-4 border-orange-400 hover:border-orange-300 animate-pulse">
-                                            <svg class="w-10 h-10 mr-4 group-hover/btn:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                                            </svg>
-                                            <span class="drop-shadow-lg">SUBMIT NOW!</span>
-                                        </a>
-                                    @endif
+                                    <!-- Submit Button - Always available, different styling if overdue -->
+                                    <a href="{{ route('materials.student.submit', $material) }}" 
+                                       class="group/btn w-full inline-flex items-center justify-center px-8 py-6 bg-gradient-to-r {{ $isOverdue ? 'from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 border-yellow-400 hover:border-yellow-300' : 'from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 border-orange-400 hover:border-orange-300 animate-pulse' }} text-white text-2xl font-black rounded-3xl shadow-2xl transform hover:scale-110 hover:rotate-1 transition-all duration-300 border-4">
+                                        <svg class="w-10 h-10 mr-4 group-hover/btn:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                        </svg>
+                                        <span class="drop-shadow-lg">
+                                            {{ $isOverdue ? 'SUBMIT LATE!' : 'SUBMIT NOW!' }}
+                                        </span>
+                                    </a>
                                 @endif
                             @endif
                         </div>
@@ -295,9 +322,9 @@
             <!-- Fun Footer -->
             <div class="text-center mt-16 py-8">
                 <div class="inline-flex items-center space-x-4 text-2xl">
-                    <span class="animate-pulse">📖</span>
+                    <span class="animate-pulse"></span>
                     <span class="text-xl font-black text-red-600">Happy learning, superstar!</span>
-                    <span class="animate-pulse">⭐</span>
+                    <span class="animate-pulse"></span>
                 </div>
             </div>
         </div>
@@ -337,6 +364,20 @@
         /* Custom download button glow effect */
         .group\/btn:hover {
             box-shadow: 0 20px 40px -12px rgba(34, 197, 94, 0.6);
+        }
+
+        /* Overdue activity styling */
+        .overdue-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: .7;
+            }
         }
     </style>
 </x-app-layout>

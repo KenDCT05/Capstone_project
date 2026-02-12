@@ -22,4 +22,19 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # Allow public access to files inside /storage
+<IfModule mod_rewrite.c>
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule ^storage/(.*)$ storage/$1 [L]
+</IfModule>
+
+# Allow browsers and online viewers to read common file types
+<FilesMatch "\.(jpg|jpeg|png|gif|pdf|docx|pptx|xlsx|txt)$">
+    Require all granted
+    Header set Access-Control-Allow-Origin "*"
+</FilesMatch>
+
+# Enable symbolic link following (important for "php artisan storage:link")
+Options +FollowSymLinks
 </IfModule>

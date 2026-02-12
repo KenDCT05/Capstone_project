@@ -4,11 +4,12 @@
         
         * {
             box-sizing: border-box;
+            
         }
 
         body {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcf7f, #4ecdc4);
+            background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 50%, #fdf2f8 100%);
             background-size: 400% 400%;
             animation: rainbowBackground 8s ease infinite;
             min-height: 100vh;
@@ -22,6 +23,7 @@
 
         .quiz-container {
             max-width: 1200px;
+            background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 50%, #fdf2f8 100%);
             margin: 0 auto;
             padding: 20px;
         }
@@ -165,16 +167,16 @@
         .btn:hover::before {
             width: 300px;
             height: 300px;
-        }
+        }   
 
         .btn-view {
-            background: linear-gradient(45deg, #dc2626, #ef4444);
+            background: linear-gradient(45deg, #e75050, #f54b4b);
             color: white;
         }
 
         .btn-view:hover {
             transform: translateY(-3px);
-            box-shadow: 0 12px 25px rgba(220, 38, 38, 0.4);
+            box-shadow: 0 12px 25px rgba(223, 47, 47, 0.4);
         }
 
         .btn-take {
@@ -239,6 +241,124 @@
             .quiz-icon { font-size: 4rem; }
             .quiz-actions { flex-direction: column; }
         }
+         .quiz-unpublished {
+        opacity: 0.7;
+        border-color: #9ca3af !important;
+    }
+    
+    .btn-disabled {
+        background: linear-gradient(45deg, #6b7280, #9ca3af);
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+    
+    .btn-disabled:hover {
+        transform: none;
+        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+.filter-section {
+    background: rgba(255,255,255,0.95);
+    border-radius: 25px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 35px rgba(220, 38, 38, 0.2);
+    border: 4px solid #dc2626;
+    animation: slideDown 0.6s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-label {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.5rem;
+    color: #dc2626;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-select {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    border: 3px solid #dc2626;
+    border-radius: 15px;
+    background: white;
+    color: #7f1d1d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.filter-select:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(220, 38, 38, 0.2);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #ef4444;
+    box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.btn-clear {
+    background: linear-gradient(45deg, #7c3aed, #a855f7);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(124, 58, 237, 0.3);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-clear:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 25px rgba(124, 58, 237, 0.4);
+}
+
+.filter-active {
+    background: rgba(220, 38, 38, 0.1);
+    padding: 12px 20px;
+    border-radius: 15px;
+    margin-top: 15px;
+    font-weight: 700;
+    color: #7f1d1d;
+    font-size: 1.1rem;
+    text-align: center;
+    animation: pulse 2s infinite;
+}
+
+.filter-grid {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: end;
+}
+
+@media (max-width: 768px) {
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
     </style>
 
     <div class="quiz-container">
@@ -247,14 +367,15 @@
         <div class="floating-emoji emoji-2">⭐</div>
         <div class="floating-emoji emoji-3">🚀</div>
         <div class="floating-emoji emoji-4">🏆</div>
-<div class="bg-white rounded-3xl shadow-2xl border-4 border-red-200 mb-12 overflow-hidden">
+    <div class="bg-white rounded-3xl shadow-2xl border-4 border-red-200 mb-12 overflow-hidden">
     
     <!-- Header Section -->
-    <div class="bg-red-700 p-8">
+    <div class="bg-red-500 p-8">
         <h1 class="quiz-title text-4xl font-bold text-white text-center">🎯 Fun Quiz Time! 🎯</h1>
         <p class="text-red-100 text-center mt-2">Test your knowledge with fun challenges</p>
     </div>
 
+    
     <!-- Content Section -->
     <div class="p-6">
         <!-- Back Button -->
@@ -270,79 +391,122 @@
     </div>
 
 </div>
+<!-- Filter Section -->
+<div class="filter-section">
+    <label class="filter-label">
+         Filter by Subject
+    </label>
+    
+    <form method="GET" action="{{ route('student.quizzes.index') }}">
+        <div class="filter-grid">
+            <div>
+                <select name="subject_id" class="filter-select" onchange="this.form.submit()">
+                    <option value=""> All Subjects</option>
+                    @foreach($enrolledSubjects as $subject)
+                        <option value="{{ $subject->id }}" 
+                                {{ $selectedSubjectId == $subject->id ? 'selected' : '' }}>
+                            {{ $subject->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            
+            @if($selectedSubjectId)
+                <a href="{{ route('student.quizzes.index') }}" class="btn-clear">
+                    Clear Filter
+                </a>
+            @endif
+        </div>
+        
 
+    </form>
+</div>
 
-        @if($quizzes->count())
-            <div class="quiz-grid">
-                @foreach($quizzes as $quiz)
-                    @php
-                        $attempt = $quiz->attempts()
-                            ->where('student_id', auth()->id())
-                            ->first();
+@if($quizzes->count())
+    <div class="quiz-grid">
+        @foreach($quizzes as $quiz)
+            @php
+                $attempt = $quiz->attempts()
+                    ->where('student_id', auth()->id())
+                    ->first();
+                
+                // Assign icons based on quiz type or title
+                $icon = '📚'; // default
+                $iconClass = 'general-icon';
+                
+                $type = strtolower($quiz->type ?? $quiz->title ?? '');
+                if (str_contains($type, 'math')) {
+                    $icon = '🔢';
+                    $iconClass = 'math-icon';
+                } elseif (str_contains($type, 'science')) {
+                    $icon = '🔬';
+                    $iconClass = 'science-icon';
+                } elseif (str_contains($type, 'english') || str_contains($type, 'language')) {
+                    $icon = '📖';
+                    $iconClass = 'english-icon';
+                } elseif (str_contains($type, 'history')) {
+                    $icon = '🏛️';
+                    $iconClass = 'history-icon';
+                } elseif (str_contains($type, 'art')) {
+                    $icon = '🎨';
+                    $iconClass = 'art-icon';
+                }
+            @endphp
+
+            <div class="quiz-card {{ !$quiz->is_published ? 'quiz-unpublished' : '' }}">
+                <div class="quiz-icon {{ $iconClass }}">{{ $icon }}</div>
+                <div class="quiz-content">
+                    <h2>{{ $quiz->title }}</h2>
+                    <div class="quiz-info">
+                        <div>📋 {{ ucfirst($quiz->type) }}</div>
+                        <div>🏆 Total Points: {{ $quiz->total_points }}</div>
                         
-                        // Assign icons based on quiz type or title
-                        $icon = '📚'; // default
-                        $iconClass = 'general-icon';
-                        
-                        $type = strtolower($quiz->type ?? $quiz->title ?? '');
-                        if (str_contains($type, 'math')) {
-                            $icon = '🔢';
-                            $iconClass = 'math-icon';
-                        } elseif (str_contains($type, 'science')) {
-                            $icon = '🔬';
-                            $iconClass = 'science-icon';
-                        } elseif (str_contains($type, 'english') || str_contains($type, 'language')) {
-                            $icon = '📖';
-                            $iconClass = 'english-icon';
-                        } elseif (str_contains($type, 'history')) {
-                            $icon = '🏛️';
-                            $iconClass = 'history-icon';
-                        } elseif (str_contains($type, 'art')) {
-                            $icon = '🎨';
-                            $iconClass = 'art-icon';
-                        }
-                    @endphp
-
-                    <div class="quiz-card">
-                        <div class="quiz-icon {{ $iconClass }}">{{ $icon }}</div>
-                        <div class="quiz-content">
-                            <h2>{{ $quiz->title }}</h2>
-                            <div class="quiz-info">
-                                <div>📋 {{ ucfirst($quiz->type) }}</div>
-                                <div>🏆 Total Points: {{ $quiz->total_points }}</div>
-                                @if($attempt)
-                                    <div style="color: #16a34a; margin-top: 10px;">✅ Completed!</div>
-                                @else
-                                    <div style="color: #dc2626; margin-top: 10px;">🎯 Ready to Take!</div>
-                                @endif
+                        @if(!$quiz->is_published)
+                            <div style="color: #dc2626; margin-top: 10px; font-weight: bold;">
+                             Quiz Closed
                             </div>
-                            <div class="quiz-actions">
-                                <a href="{{ route('student.quizzes.result', $quiz) }}" 
-                                   class="btn btn-view">
-                                    👁️ View Results
-                                </a>
-                                @if(!$attempt)
-                                    <a href="{{ route('student.quizzes.show', ['quiz' => $quiz, 'q' => 0]) }}"
-                                       class="btn btn-take">
-                                        🚀 Start Quiz!
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
+                        @elseif($attempt)
+                            <div style="color: #16a34a; margin-top: 10px;"> Completed!</div>
+                        @else
+                            <div style="color: #dc2626; margin-top: 10px;"> Ready to Take!</div>
+                        @endif
                     </div>
-                @endforeach
+                    <div class="quiz-actions">
+                        @if($attempt)
+                            <a href="{{ route('student.quizzes.result', $quiz) }}" 
+                               class="btn btn-view">
+                                 View Results
+                            </a>
+                        @endif
+                        
+                        @if(!$attempt)
+                            @if($quiz->is_published)
+                                <a href="{{ route('student.quizzes.show', ['quiz' => $quiz, 'q' => 0]) }}"
+                                   class="btn btn-take">
+                                     Start Quiz!
+                                </a>
+                            @else
+                                <button class="btn btn-disabled" disabled>
+                                     Quiz Unavailable
+                                </button>
+                            @endif
+                        @endif
+                    </div>
+                </div>
             </div>
+        @endforeach
+    </div>
 
-            <div class="pagination-wrapper">
-                {{ $quizzes->links() }}
-            </div>
-        @else
-            <div class="empty-state">
-                <div style="font-size: 4rem; margin-bottom: 20px;">😴</div>
-                <div>No quizzes available at the moment.</div>
-                <div style="font-size: 1.2rem; margin-top: 10px; opacity: 0.8;">Check back soon for exciting new quizzes!</div>
-            </div>
-        @endif
+    <div class="pagination-wrapper">
+        {{ $quizzes->links() }}
+    </div>
+@else
+    <div class="empty-state">
+        <div style="font-size: 4rem; margin-bottom: 20px;">😴</div>
+        <div>No quizzes available at the moment.</div>
+        <div style="font-size: 1.2rem; margin-top: 10px; opacity: 0.8;">Check back soon for exciting new quizzes!</div>
+    </div>
+@endif
     </div>
 
     <script>

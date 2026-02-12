@@ -38,16 +38,22 @@ class QuizController extends Controller
         $data = $request->validate([
             'subject_id' => 'required|exists:subjects,id',
             'title' => 'required|string|max:255',
-            'type' => 'required|in:quiz,exam,activity',
+            'type' => 'required|in:quiz,exam',
             'time_limit_seconds' => 'nullable|integer|min:10|max:86400',
             'randomize_questions' => 'boolean',
             'randomize_options' => 'boolean',
+            // NEW: Retake policy validation
+            'max_attempts' => 'required|integer|min:0|max:10',
+            'retake_scoring' => 'required|in:highest,latest,average,first',
+            'cooldown_minutes' => 'nullable|integer|min:0|max:10080', // Max 1 week
+            'show_previous_answers' => 'boolean',
+            'require_pass_all' => 'boolean',
         ]);
 
-        // ensure teacher owns subject
+        // Ensure teacher owns subject
         abort_unless(
-            Subject::where('id',$data['subject_id'])
-                   ->where('teacher_id',Auth::id())->exists(),
+            Subject::where('id', $data['subject_id'])
+                   ->where('teacher_id', Auth::id())->exists(),
             403
         );
 
@@ -58,7 +64,7 @@ class QuizController extends Controller
 
         return redirect()
             ->route('quizzes.edit', $quiz)
-            ->with('success','Quiz created. Add questions below.');
+            ->with('success', 'Quiz created. Add questions below.');
     }
 
     public function edit(Quiz $quiz)
@@ -70,33 +76,65 @@ class QuizController extends Controller
         return view('quizzes.edit', compact('quiz','subjects'));
     }
 
-    public function update(Request $request, Quiz $quiz)
-    {
-        abort_unless($quiz->teacher_id === Auth::id(), 403);
+public function update(Request $request, Quiz $quiz)
+{
+    abort_unless($quiz->teacher_id === Auth::id(), 403);
 
-        $data = $request->validate([
-            'subject_id' => 'required|exists:subjects,id',
-            'title' => 'required|string|max:255',
-            'type' => 'required|in:quiz,exam,activity',
-            'time_limit_seconds' => 'nullable|integer|min:10|max:86400',
-            'randomize_questions' => 'boolean',
-            'randomize_options' => 'boolean',
-            'is_published' => 'boolean',
-        ]);
+    // ✅ STEP 1: Log what's coming in
+    \Log::info('Update Request Data:', [
+        'all_input' => $request->all(),
+        'max_attempts' => $request->input('max_attempts'),
+        'retake_scoring' => $request->input('retake_scoring'),
+        'show_previous_answers' => $request->input('show_previous_answers'),
+        'require_pass_all' => $request->input('require_pass_all'),
+    ]);
 
-        abort_unless(
-            Subject::where('id',$data['subject_id'])
-                   ->where('teacher_id',Auth::id())->exists(),
-            403
-        );
+    $data = $request->validate([
+        'randomize_questions' => 'boolean',
+        'randomize_options' => 'boolean',
+        'is_published' => 'boolean',
+        'max_attempts' => 'required|integer|min:0|max:10',
+        'retake_scoring' => 'required|in:highest,latest,average,first',
+        'cooldown_minutes' => 'nullable|integer|min:0|max:10080',
+        'show_previous_answers' => 'boolean',
+        'require_pass_all' => 'boolean',
+    ]);
 
-        $quiz->update($data);
+    // ✅ STEP 2: Log validated data
+    \Log::info('Validated Data:', $data);
 
-        // recompute total_points
-        $quiz->update(['total_points' => $quiz->questions()->sum('points')]);
+    // ✅ STEP 3: Log before update
+    \Log::info('Before Update:', [
+        'max_attempts' => $quiz->max_attempts,
+        'retake_scoring' => $quiz->retake_scoring,
+        'show_previous_answers' => $quiz->show_previous_answers,
+        'require_pass_all' => $quiz->require_pass_all,
+    ]);
 
-        return back()->with('success','Quiz updated.');
-    }
+    $quiz->update([
+        'randomize_questions' => $request->boolean('randomize_questions'),
+        'randomize_options' => $request->boolean('randomize_options'),
+        'is_published' => $request->boolean('is_published'),
+        'max_attempts' => $data['max_attempts'],
+        'retake_scoring' => $data['retake_scoring'],
+        'cooldown_minutes' => $data['cooldown_minutes'] ?? null,
+        'show_previous_answers' => $request->boolean('show_previous_answers'),
+        'require_pass_all' => $request->boolean('require_pass_all'),
+        'total_points' => $quiz->questions()->sum('points'),
+    ]);
+
+    // ✅ STEP 4: Refresh and log after update
+    $quiz->refresh();
+    \Log::info('After Update:', [
+        'max_attempts' => $quiz->max_attempts,
+        'retake_scoring' => $quiz->retake_scoring,
+        'show_previous_answers' => $quiz->show_previous_answers,
+        'require_pass_all' => $quiz->require_pass_all,
+    ]);
+
+    return back()->with('success', 'Quiz settings updated successfully!');
+}
+    
 
     public function destroy(Quiz $quiz)
     {
@@ -391,5 +429,43 @@ class QuizController extends Controller
         }
 
         return back()->with('success', 'Question deleted.');
+    }
+    public function unpublish(Quiz $quiz)
+{
+    abort_unless($quiz->teacher_id === Auth::id(), 403);
+
+    $quiz->update(['is_published' => false]);
+
+    return back()->with('success', 'Quiz unpublished. Students can no longer take this quiz.');
+}
+ public function attemptStats(Quiz $quiz)
+    {
+        abort_unless($quiz->teacher_id === Auth::id(), 403);
+
+        $attempts = $quiz->attempts()
+            ->whereNotNull('submitted_at')
+            ->with('student')
+            ->get();
+
+        // Group by student
+        $studentStats = $attempts->groupBy('student_id')->map(function ($studentAttempts, $studentId) use ($quiz) {
+            $student = $studentAttempts->first()->student;
+            $finalScore = $quiz->getFinalScore($studentId);
+
+            return [
+                'student' => $student,
+                'attempt_count' => $studentAttempts->count(),
+                'final_score' => $finalScore,
+                'all_attempts' => $studentAttempts->map(function ($attempt) {
+                    return [
+                        'score' => $attempt->score,
+                        'percentage' => $attempt->percentage,
+                        'submitted_at' => $attempt->submitted_at,
+                    ];
+                })
+            ];
+        });
+
+        return view('quizzes.attempt-stats', compact('quiz', 'studentStats'));
     }
 }

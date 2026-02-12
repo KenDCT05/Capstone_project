@@ -3,14 +3,12 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <!-- Header Section -->
-
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 mb-8 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-800 to-red-900 px-8 py-6">
                     <h1 class="text-3xl font-bold text-white flex items-center">
-                                <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                </svg>
-                                
+                        <svg class="w-12 h-12 text-white mr-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                        </svg>
                         Admin Gradebook
                     </h1>
                     <p class="text-red-100 mt-2">Manage all student scores and attendance across all subjects</p>
@@ -19,14 +17,14 @@
                 <div class="px-8 py-6">
                     <a href="{{ route('dashboard') }}" 
                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-300 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
                         <span class="font-medium">Dashboard</span>
                     </a> 
                 </div>
             </div>
+
             <!-- Filter Controls -->
             <div class="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-red-100">
                 <form method="GET" action="{{ route('admin.gradebook') }}" id="filter-form" class="space-y-6">
@@ -127,46 +125,55 @@
                     </div>
                 </div>
             @else
-                <!-- Action Buttons for Adding New Assessments -->
-                <div class="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-red-100">
-                    <div class="flex items-center mb-6">
-                        <div class="bg-red-100 rounded-lg p-2 mr-3">
-                            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
-                            </svg>
-                        </div>
-                        <h3 class="text-red-900 font-bold text-xl">Add New Assessment</h3>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-                        <button type="button" id="add-quiz" 
-                                class="group px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                            <div class="flex items-center justify-center gap-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Quiz
-                            </div>
-                        </button>
-                        <button type="button" id="add-activity" 
-                                class="group px-8 py-4 bg-gradient-to-r from-red-700 to-red-800 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                            <div class="flex items-center justify-center gap-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Activity
-                            </div>
-                        </button>
-                        <button type="button" id="add-exam" 
-                                class="group px-8 py-4 bg-gradient-to-r from-red-800 to-red-900 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                            <div class="flex items-center justify-center gap-3">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Exam
-                            </div>
-                        </button>
-                    </div>
+<!-- Action Buttons for Adding New Assessments -->
+<div class="bg-white rounded-2xl shadow-xl p-6 mb-8 border border-red-100">
+    <div class="flex items-center mb-6">
+        <div class="bg-red-100 rounded-lg p-2 mr-3">
+            <svg class="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"/>
+            </svg>
+        </div>
+        <h3 class="text-red-900 font-bold text-xl">Add New Assessment</h3>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button type="button" id="add-quiz" 
+                class="group px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div class="flex flex-col items-center justify-center gap-2">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Quiz
                 </div>
+                <span class="text-xs text-red-100 opacity-90">Short assessments</span>
+            </div>
+        </button>
+        <button type="button" id="add-activity" 
+                class="group px-8 py-4 bg-gradient-to-r from-green-600 to-green-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div class="flex flex-col items-center justify-center gap-2">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Activity
+                </div>
+                <span class="text-xs text-green-100 opacity-90">Hands-on tasks • Always 100 points</span>
+            </div>
+        </button>
+        <button type="button" id="add-exam" 
+                class="group px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
+            <div class="flex flex-col items-center justify-center gap-2">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 transition-transform group-hover:rotate-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Exam
+                </div>
+                <span class="text-xs text-blue-100 opacity-90">Major tests</span>
+            </div>
+        </button>
+    </div>
+</div>
 
                 <!-- Gradebook Table Section -->
                 <div class="bg-white rounded-2xl shadow-2xl overflow-hidden border border-red-100">
@@ -267,7 +274,7 @@
                 box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
             }
 
-            /* Max Score Row Styling */
+            /* Max Score Row Styling - Quiz (Default/Red) */
             .htMaxScore {
                 background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%) !important;
                 font-weight: 800 !important;
@@ -281,12 +288,101 @@
                 background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%) !important;
             }
 
-            /* Attendance Column Styling */
-            .htAttendance {
-                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
-                color: #1e40af !important;
-                font-weight: 600 !important;
+            /* Activity Max Score - Green styling (Non-editable, always 100) */
+            .htActivityMaxScore {
+                background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
+                font-weight: 800 !important;
+                color: #166534 !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+                border: 2px solid #16a34a !important;
+                font-size: 15px !important;
+                cursor: not-allowed !important;
             }
+
+            .htActivityMaxScore:hover {
+                background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important;
+            }
+
+            /* Exam Max Score - Blue styling */
+            .htExamMaxScore {
+                background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%) !important;
+                font-weight: 800 !important;
+                color: #1e40af !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+                border: 2px solid #2563eb !important;
+                font-size: 15px !important;
+            }
+
+            .htExamMaxScore:hover {
+                background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important;
+            }
+
+            /* Attendance Max Score - Yellow styling (Non-editable, always 10) */
+            .htAttendanceMaxScore {
+                background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%) !important;
+                font-weight: 800 !important;
+                color: #92400e !important;
+                text-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+                border: 2px solid #f59e0b !important;
+                font-size: 15px !important;
+                cursor: not-allowed !important;
+            }
+
+            .htAttendanceMaxScore:hover {
+                background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important;
+            }
+            /* Student Name Column Styling - Darker Red */
+.htStudentNameHeader {
+    background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
+    color: white !important;
+    font-weight: 800 !important;
+    font-size: 15px !important;
+    text-align: center !important;
+}
+
+.htStudentNameCell {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%) !important;
+    color: #334155 !important;
+    font-weight: 600 !important;
+    border-right: 3px solid #64748b !important;
+}
+
+.htStudentNameCell:hover {
+    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+}
+
+/* Student row column styling - lighter versions of max score colors */
+.htQuizColumn {
+    background-color: #fee2e2 !important;
+}
+
+.htQuizColumn:hover {
+    background-color: #fecaca !important;
+}
+
+.htActivityColumn {
+    background-color: #f0fdf4 !important;
+}
+
+.htActivityColumn:hover {
+    background-color: #dcfce7 !important;
+}
+
+.htExamColumn {
+    background-color: #eff6ff !important;
+}
+
+.htExamColumn:hover {
+    background-color: #dbeafe !important;
+}
+
+.htAttendanceColumn {
+    background-color: #fefce8 !important;
+}
+
+.htAttendanceColumn:hover {
+    background-color: #fef3c7 !important;
+}
         </style>
 
         <script>
@@ -313,12 +409,37 @@
         @if($students->isNotEmpty() && !is_null($selectedSubject) && !is_null($selectedTeacher))
         <script>
             const container = document.getElementById('gradebook-table');
-            const students = @json($students);
-            const rawScores = @json($scores);
-            const subjectId = {{ $selectedSubject }};
-            const teacherId = {{ $selectedTeacher }};
-            let allLabels = @json($columns);
-            let maxScores = @json(isset($maxScores) ? $maxScores : []);
+            const students = @json($students ?? []);
+            const rawScores = @json($scores ?? []);
+            const subjectId = {{ $selectedSubject ?? 0 }};
+            const teacherId = {{ $selectedTeacher ?? 0 }};
+            let allLabels = @json($columns ?? []);
+            let maxScores = @json($maxScores ?? []);
+
+            console.log('Debug Data:', {
+                students: students,
+                rawScores: rawScores,
+                subjectId: subjectId,
+                teacherId: teacherId,
+                allLabels: allLabels,
+                maxScores: maxScores
+            });
+
+            // Helper function to detect assessment type from label
+            function getAssessmentType(label) {
+                const labelLower = label.toLowerCase();
+                if (labelLower.includes('quiz')) return 'quiz';
+                if (labelLower.includes('exam')) return 'exam';
+                if (labelLower.includes('attendance') || labelLower.includes('character')) return 'attendance';
+                if (labelLower.includes('activity')) return 'activity';
+                return 'activity'; // default to activity
+            }
+
+            // Ensure we have at least some default columns if none exist
+            if (!allLabels || allLabels.length === 0) {
+                allLabels = ['Attendance'];
+                maxScores = { 'Attendance': 10 };
+            }
 
             // Ensure Attendance is always present
             if (!allLabels.includes('Attendance')) {
@@ -327,22 +448,42 @@
             }
 
             // Create table data from student scores
-            let gradebookData = students.map(student => {
-                const scores = rawScores[student.id] || [];
-                const map = {};
-                scores.forEach(s => map[s.label] = s.score);
+            let gradebookData = [];
+            
+            if (students && students.length > 0) {
+                gradebookData = students.map(student => {
+                    const scores = rawScores[student.id] || [];
+                    const map = {};
+                    scores.forEach(s => map[s.label] = s.score);
 
-                const row = { Name: student.name, student_id: student.id };
-                allLabels.forEach(label => row[label] = map[label] ?? '');
-                return row;
-            });
+                    const row = { Name: student.name, student_id: student.id };
+                    allLabels.forEach(label => row[label] = map[label] ?? '');
+                    return row;
+                });
+            } else {
+                // If no students, create empty row for demonstration
+                gradebookData = [{
+                    Name: 'No students enrolled',
+                    student_id: null,
+                    ...Object.fromEntries(allLabels.map(label => [label, '']))
+                }];
+            }
 
             // Add max score row to the top
             const maxRow = { Name: 'Max Score', student_id: null };
             allLabels.forEach(label => {
-                maxRow[label] = maxScores[label] || (label === 'Attendance' ? 10 : '');
+                const type = getAssessmentType(label);
+                if (type === 'activity') {
+                    maxRow[label] = 100; // Always 100 for activities
+                } else if (type === 'attendance' || label === 'Attendance') {
+                    maxRow[label] = 10; // Always 10 for attendance
+                } else {
+                    maxRow[label] = maxScores[label] || '';
+                }
             });
             gradebookData.unshift(maxRow);
+
+            console.log('Final gradebook data:', gradebookData);
 
             // Initialize Handsontable
             const hot = new Handsontable(container, {
@@ -361,7 +502,7 @@
                         numericFormat: {
                             pattern: '0.00'
                         },
-                        width: label === 'Attendance' ? 120 : 100
+                        width: 100
                     }))
                 ],
                 rowHeaders: true,
@@ -369,23 +510,68 @@
                 height: 500,
                 licenseKey: 'non-commercial-and-evaluation',
                 stretchH: 'all',
+                contextMenu: false, // Disable all right-click functionality
                 
-                cells: function (row, col) {
-                    const cellProperties = {};
+                // Handle cell properties for styling and editability
+// Handle cell properties for styling and editability
+cells: function (row, col) {
+    const cellProperties = {};
 
-                    // Row 0 = Max Scores row
-                    if (row === 0) {
-                        cellProperties.className = 'htMaxScore';
-                    }
+    // Style the Student Name column (col 0)
+    if (col === 0) {
+        if (row === 0) {
+            // Max Score row in Student Name column
+            cellProperties.className = 'htStudentNameHeader';
+        } else {
+            // Regular student name cells
+            cellProperties.className = 'htStudentNameCell';
+        }
+    }
 
-                    // Attendance column styling
-                    if (allLabels[col - 1] === 'Attendance' && row > 0) {
-                        cellProperties.className = 'htAttendance';
-                    }
+    // Row 0 = Max Scores row (for assessment columns)
+    if (row === 0 && col > 0) {
+        const label = allLabels[col - 1];
+        const type = getAssessmentType(label);
+        
+        if (type === 'activity') {
+            // Activities are always 100 and non-editable
+            cellProperties.readOnly = true;
+            cellProperties.className = 'htActivityMaxScore';
+        } else if (type === 'exam') {
+            // Exams are editable with blue styling
+            cellProperties.className = 'htExamMaxScore';
+        } else if (type === 'attendance' || label === 'Attendance') {
+            // Attendance is locked at 10 with yellow styling
+            cellProperties.readOnly = true;
+            cellProperties.className = 'htAttendanceMaxScore';
+        } else {
+            // Quizzes and other assessments (red)
+            cellProperties.className = 'htMaxScore';
+        }
+    }
+    
+    // Apply column colors to all student rows (row > 0)
+    if (row > 0 && col > 0) {
+        const label = allLabels[col - 1];
+        const type = getAssessmentType(label);
+        
+        if (type === 'activity') {
+            cellProperties.className = 'htActivityColumn';
+        } else if (type === 'exam') {
+            cellProperties.className = 'htExamColumn';
+        } else if (type === 'attendance' || label === 'Attendance') {
+            cellProperties.className = 'htAttendanceColumn';
+        } else {
+            // Quiz columns
+            cellProperties.className = 'htQuizColumn';
+        }
+    }
 
-                    return cellProperties;
-                }
+    return cellProperties;
+}
             });
+
+            console.log('Handsontable initialized with data:', hot.getData());
 
             function updateTable() {
                 const columns = [{ 
@@ -400,22 +586,43 @@
                     numericFormat: {
                         pattern: '0.00'
                     },
-                    width: label === 'Attendance' ? 120 : 100
+                    width: 100
                 }));
 
                 // Rebuild rows with maxRow on top
-                const updatedData = students.map(student => {
-                    const scores = rawScores[student.id] || [];
-                    const map = {};
-                    scores.forEach(s => map[s.label] = s.score);
+                let updatedData = [];
+                
+                if (students && students.length > 0) {
+                    updatedData = students.map(student => {
+                        const scores = rawScores[student.id] || [];
+                        const map = {};
+                        scores.forEach(s => map[s.label] = s.score);
 
-                    const row = { Name: student.name, student_id: student.id };
-                    allLabels.forEach(label => row[label] = map[label] ?? '');
-                    return row;
-                });
+                        const row = { Name: student.name, student_id: student.id };
+                        allLabels.forEach(label => row[label] = map[label] ?? '');
+                        return row;
+                    });
+                } else {
+                    updatedData = [{
+                        Name: 'No students enrolled',
+                        student_id: null,
+                        ...Object.fromEntries(allLabels.map(label => [label, '']))
+                    }];
+                }
 
+                // Update max row with proper values
                 const newMaxRow = { Name: 'Max Score', student_id: null };
-                allLabels.forEach(label => newMaxRow[label] = maxRow[label] || (label === 'Attendance' ? 10 : ''));
+                allLabels.forEach(label => {
+                    const type = getAssessmentType(label);
+                    if (type === 'activity') {
+                        newMaxRow[label] = 100; // Always 100 for activities
+                    } else if (type === 'attendance' || label === 'Attendance') {
+                        newMaxRow[label] = 10; // Always 10 for attendance
+                    } else {
+                        // For quizzes and exams, preserve existing max scores
+                        newMaxRow[label] = gradebookData[0] ? gradebookData[0][label] : '';
+                    }
+                });
                 gradebookData = [newMaxRow, ...updatedData];
 
                 hot.updateSettings({
@@ -425,6 +632,7 @@
                 });
 
                 hot.render();
+                console.log('Table updated with data:', gradebookData);
             }
 
             function getNextLabel(prefix) {
@@ -436,14 +644,21 @@
             function addColumn(type) {
                 const newLabel = getNextLabel(type);
                 allLabels.push(newLabel);
-                gradebookData.forEach(row => row[newLabel] = '');
                 
-                // Set default max score for new column
-                if (type === 'Attendance') {
-                    maxRow[newLabel] = 10;
-                } else {
-                    maxRow[newLabel] = '';
-                }
+                // Add empty column to all student rows
+                gradebookData.forEach((row, index) => {
+                    if (index === 0) {
+                        // Max score row
+                        if (type === 'Activity') {
+                            row[newLabel] = 100; // Activities always 100
+                        } else {
+                            row[newLabel] = '';
+                        }
+                    } else {
+                        // Student rows
+                        row[newLabel] = '';
+                    }
+                });
                 
                 updateTable();
             }
@@ -452,7 +667,6 @@
             document.getElementById('add-quiz').addEventListener('click', () => addColumn('Quiz'));
             document.getElementById('add-activity').addEventListener('click', () => addColumn('Activity'));
             document.getElementById('add-exam').addEventListener('click', () => addColumn('Exam'));
-         
 
             // Save functionality
             document.getElementById('save-button').addEventListener('click', function() {
@@ -478,7 +692,13 @@
 
                 const maxScoresData = {};
                 allLabels.forEach(label => {
-                    maxScoresData[label] = maxRow[label] ?? null;
+                    const type = getAssessmentType(label);
+                    if (type === 'activity') {
+                        // Activities are always 100, don't send to backend as it's handled automatically
+                        maxScoresData[label] = 100;
+                    } else {
+                        maxScoresData[label] = maxRow[label] || null;
+                    }
                 });
 
                 fetch('/admin/gradebook/save', {

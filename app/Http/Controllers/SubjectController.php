@@ -6,14 +6,22 @@ use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Models\User;
+use App\Models\EngagementLog;
 
 class SubjectController extends Controller
 {
     // Show create form (for teachers)
-    public function create()
-    {
-        return view('subjects.create');
-    }
+public function create()
+{
+    // Get all sections with year_level
+    $sections = \App\Models\Section::orderBy('year_level')
+                                   ->orderBy('name')
+                                   ->get();
+    
+    $subjects = \App\Models\SubjectList::orderBy('name')->get();
+    
+    return view('subjects.create', compact('sections', 'subjects'));
+}
 
     // Store new subject
     public function store(Request $request)
@@ -27,7 +35,7 @@ class SubjectController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'teacher_id' => auth()->id(),
-            'join_code' => strtoupper(Str::random(6)), // e.g. AB12CD
+            'join_code' => strtoupper(Str::random(6)), 
         ]);
 
         return redirect()->route('subjects.index')->with('success', 'Subject created!');
@@ -52,7 +60,13 @@ class SubjectController extends Controller
         if (! $subject->students->contains(auth()->id())) {
             $subject->students()->attach(auth()->id());
         }
-
+        EngagementLog::create([
+            'user_id' => auth()->id(),
+            'subject_id' => $subject->id,
+            'action'  => 'course_enrollment',
+            'context' => 'subject:' . $subject->id,
+            'value'   => 1,
+        ]);
         return redirect()->route('student.subjects.index')->with('success', 'Joined subject successfully!');
     }
     public function index()

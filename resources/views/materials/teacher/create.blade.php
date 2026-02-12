@@ -169,23 +169,196 @@
     </div>
 
     <script>
-        function toggleDueDate() {
-            const checkbox = document.getElementById('is_activity');
-            const dueDateField = document.getElementById('due_date_field');
-            dueDateField.style.display = checkbox.checked ? 'block' : 'none';
+    // ✅ IMPROVED: Better client-side validation
+    function validateForm() {
+        const dueDateInput = document.querySelector('input[name="due_date"]');
+        const isActivityCheckbox = document.getElementById('is_activity');
+        
+        if (isActivityCheckbox && isActivityCheckbox.checked && dueDateInput && dueDateInput.value) {
+            const dueDate = new Date(dueDateInput.value);
+            const now = new Date();
+            
+            // Allow due dates up to 5 minutes in the past (to handle timezone issues)
+            const fiveMinutesAgo = new Date(now.getTime() - 5 * 60 * 1000);
+            
+            if (dueDate < fiveMinutesAgo) {
+                alert('Due date cannot be more than 5 minutes in the past. Please adjust the time.');
+                dueDateInput.focus();
+                return false;
+            }
         }
+        
+        return true;
+    }
 
-        // File input enhancement
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name;
+    // ✅ IMPROVED: Better datetime handling
+    function setMinDateTime() {
+        const dueDateInput = document.querySelector('input[name="due_date"]');
+        if (dueDateInput) {
+            // Set minimum to 5 minutes ago to handle delays
+            const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+            const minDateTime = fiveMinutesAgo.toISOString().slice(0, 16);
+            dueDateInput.setAttribute('min', minDateTime);
+        }
+    }
+
+    // ✅ IMPROVED: Activity toggle with better due date handling
+    function toggleDueDate() {
+        const checkbox = document.getElementById('is_activity');
+        const dueDateField = document.getElementById('due_date_field');
+        dueDateField.style.display = checkbox.checked ? 'block' : 'none';
+        
+        if (checkbox.checked) {
+            setMinDateTime();
+        }
+    }
+
+    // ✅ Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        setMinDateTime();
+        
+        // Update minimum datetime every minute
+        setInterval(setMinDateTime, 60000);
+        
+        // ✅ IMPROVED: Form submission with retry mechanism
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Disable submit button to prevent double submission
+                const submitBtn = this.querySelector('button[type="submit"]');
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    const originalContent = submitBtn.innerHTML;
+                    submitBtn.innerHTML = '<svg class="animate-spin h-5 w-5 mr-2 inline" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>Uploading...';
+                    
+                    // Re-enable button after 30 seconds as fallback
+                    setTimeout(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalContent;
+                    }, 30000);
+                }
+            });
+        }
+    });
+
+    // ✅ IMPROVED: File input enhancement with better error handling
+    const fileInput = document.getElementById('fileInput');
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
             const fileText = document.getElementById('fileText');
-            if (fileName) {
-                fileText.textContent = `Selected: ${fileName}`;
+            
+            if (file) {
+                // Check file size (10MB limit)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File size cannot exceed 10MB. Please choose a smaller file.');
+                    this.value = '';
+                    fileText.textContent = 'Click to upload or drag and drop';
+                    fileText.classList.remove('text-green-700');
+                    return;
+                }
+                
+                // Check file type
+                const allowedTypes = ['.pdf', '.doc', '.docx', '.txt', '.jpg', '.jpeg', '.png', '.zip', '.rar', '.ppt', '.pptx', '.xls', '.xlsx'];
+                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                if (!allowedTypes.includes(fileExtension)) {
+                    alert('Invalid file type. Please choose a PDF, DOC, DOCX, TXT, JPG, JPEG, PNG, ZIP, RAR, PPT, PPTX, XLS, or XLSX file.');
+                    this.value = '';
+                    fileText.textContent = 'Click to upload or drag and drop';
+                    fileText.classList.remove('text-green-700');
+                    return;
+                }
+                
+                const fileSizeMB = (file.size / 1024 / 1024).toFixed(2);
+                fileText.textContent = `Selected: ${file.name} (${fileSizeMB} MB)`;
                 fileText.classList.add('text-green-700');
             } else {
                 fileText.textContent = 'Click to upload or drag and drop';
                 fileText.classList.remove('text-green-700');
             }
         });
-    </script>
+
+        // ✅ Add drag and drop functionality
+        const dropZone = fileInput.parentElement;
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-red-400', 'bg-red-200');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-red-400', 'bg-red-200');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                // Trigger the change event
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        }
+    }
+
+    // ✅ Add connection check and retry functionality
+    function checkConnection() {
+        return navigator.onLine;
+    }
+
+    // ✅ Show loading indicator during form submission
+    function showLoadingState(form) {
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.id = 'loading-overlay';
+        loadingOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+        loadingOverlay.innerHTML = `
+            <div class="bg-white rounded-lg p-6 max-w-sm mx-4">
+                <div class="flex items-center">
+                    <svg class="animate-spin h-6 w-6 mr-3 text-red-600" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"></circle>
+                        <path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-gray-800 font-medium">Uploading material...</span>
+                </div>
+                <div class="mt-2 text-sm text-gray-600">Please don't close this window</div>
+            </div>
+        `;
+        document.body.appendChild(loadingOverlay);
+    }
+
+    // ✅ Handle form submission errors gracefully
+    window.addEventListener('beforeunload', function(e) {
+        const loadingOverlay = document.getElementById('loading-overlay');
+        if (loadingOverlay) {
+            e.preventDefault();
+            e.returnValue = 'Upload in progress. Are you sure you want to leave?';
+            return e.returnValue;
+        }
+    });
+</script>
 </x-app-layout>

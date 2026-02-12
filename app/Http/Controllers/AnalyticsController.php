@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Score;
-use App\Models\MaxScore;
+use Carbon\Carbon;
 use App\Models\User;
+use App\Models\Score;
 use App\Models\Subject;
+use App\Models\MaxScore;
 use Illuminate\Http\Request;
+use App\Services\SmsService;
+use App\Models\SmsLog;
+use App\Models\EngagementLog;
 use Illuminate\Support\Facades\DB;
+use App\Services\EmailService;
+use App\Models\EmailLog;
+
 
 class AnalyticsController extends Controller
 {
@@ -215,90 +222,245 @@ $columnPerformance = $scoresWithTransmutation->groupBy('label')
     /**
      * Risk Alerts using transmuted grades - Updated for better filtering
      */
-    public function riskAlerts(Request $request)
-    {
-        $teacher = auth()->user();
-        $subjects = Subject::where('teacher_id', $teacher->id)->get();
+public function riskAlerts(Request $request, SmsService $sms, EmailService $emailService)
+{
+    $teacher = auth()->user();
+    $subjects = Subject::where('teacher_id', $teacher->id)->get();
 
-        $selectedSubject = $request->input('subject_id');
-        $selectedStudent = $request->input('student_id');
+    $selectedSubject = $request->input('subject_id');
+    $selectedStudent = $request->input('student_id');
 
-        $subjectIds = $selectedSubject
-            ? [$selectedSubject]
-            : $subjects->pluck('id')->toArray();
+    $subjectIds = $selectedSubject
+        ? [$selectedSubject]
+        : $subjects->pluck('id')->toArray();
 
-        if (empty($subjectIds)) {
-            return view('analytics.risk-alerts', [
-                'atRisk' => collect(),
-                'safeStudents' => collect(),
-                'subjects' => $subjects,
-                'selectedSubject' => $selectedSubject,
-                'selectedStudent' => $selectedStudent,
-            ]);
-        }
-
-        $studentIds = DB::table('subject_user')
-            ->whereIn('subject_id', $subjectIds)
-            ->pluck('user_id')
-            ->unique();
-
-        $students = User::whereIn('id', $studentIds)
-            ->where('role', 'student')
-            ->when($selectedStudent, fn($q) => $q->where('id', $selectedStudent))
-            ->get();
-
-        $studentData = collect();
-
-        foreach ($students as $student) {
-            foreach ($subjectIds as $subjectId) {
-                $scoresWithTransmutation = $this->getScoresWithTransmutation($subjectId, $student->id);
-
-                if ($scoresWithTransmutation->isEmpty()) {
-                    continue;
-                }
-
-                $avgTransmuted = round($scoresWithTransmutation->avg('transmuted_grade'), 2);
-                $avgPercentage = round($scoresWithTransmutation->avg('percentage'), 2);
-
-                $studentData->push([
-                    'student_id' => $student->id,
-                    'student_name' => $student->name,
-                    'subject_id' => $subjectId,
-                    'subject_name' => $subjects->firstWhere('id', $subjectId)->name ?? 'Unknown',
-                    'average_transmuted' => $avgTransmuted,
-                    'average_percentage' => $avgPercentage,
-                    'total_assessments' => $scoresWithTransmutation->count(),
-                    'risk_level' => $this->getTransmutedRiskLevel($avgTransmuted),
-                    'performance_level' => $this->getTransmutedGrade($avgPercentage)['performance']
-                ]);
-            }
-        }
-
-        // Split based on transmuted grades (75 is the passing threshold)
-        $atRisk = $studentData->filter(fn($s) => $s['average_transmuted'] < 75)
-                              ->sortBy('average_transmuted');
-
-        $safeStudents = $studentData->filter(fn($s) => $s['average_transmuted'] >= 75)
-                                    ->sortByDesc('average_transmuted');
-
-        return view('analytics.risk-alerts', compact(
-            'atRisk', 'safeStudents', 'subjects', 'selectedSubject', 'selectedStudent'
-        ));
+    if (empty($subjectIds)) {
+        return view('analytics.risk-alerts', [
+            'atRisk' => collect(),
+            'safeStudents' => collect(),
+            'subjects' => $subjects,
+            'selectedSubject' => $selectedSubject,
+            'selectedStudent' => $selectedStudent,
+        ]);
     }
 
-    /**
-     * Performance Insights with transmuted grades - Enhanced
-     */
-    public function insights($studentId)
+    $studentIds = DB::table('subject_user')
+        ->whereIn('subject_id', $subjectIds)
+        ->pluck('user_id')
+        ->unique();
+
+    $allStudentsForFilter = User::whereIn('id', $studentIds)
+       ->where('role', 'student')
+       ->select('id', 'name')
+       ->orderBy('name')
+       ->get();
+
+    $students = User::whereIn('id', $studentIds)
+        ->where('role', 'student')
+        ->when($selectedStudent, fn($q) => $q->where('id', $selectedStudent))
+        ->get();
+
+    $studentData = collect();
+
+    foreach ($students as $student) {
+        foreach ($subjectIds as $subjectId) {
+            $scoresWithTransmutation = $this->getScoresWithTransmutation($subjectId, $student->id);
+
+            if ($scoresWithTransmutation->isEmpty()) {
+                continue;
+            }
+
+            $recentScores = $scoresWithTransmutation->where('created_at', '>=', now()->subWeeks(3));
+            $olderScores = $scoresWithTransmutation->where('created_at', '<', now()->subWeeks(3));
+            
+            $trend = 'stable';
+            if ($recentScores->count() >= 2 && $olderScores->count() >= 2) {
+                $recentAvg = $recentScores->avg('transmuted_grade');
+                $olderAvg = $olderScores->avg('transmuted_grade');
+                $difference = $recentAvg - $olderAvg;
+                
+                if ($difference >= 5) $trend = 'improving';
+                elseif ($difference <= -5) $trend = 'declining';
+            }
+
+            $avgTransmuted = round($scoresWithTransmutation->avg('transmuted_grade'), 2);
+            $avgPercentage = round($scoresWithTransmutation->avg('percentage'), 2);
+
+            $allFailedScores = $scoresWithTransmutation->filter(fn($s) => $s->transmuted_grade < 75);
+            $recentFailedScores = $allFailedScores->where('created_at', '>=', now()->subWeeks(2));
+            $failedCount = $allFailedScores->count();
+            $recentFailedCount = $recentFailedScores->count();
+
+            $riskSeverity = $this->calculateRiskSeverity(
+                $failedCount, 
+                $recentFailedCount, 
+                $avgTransmuted, 
+                $trend,
+                $scoresWithTransmutation->count()
+            );
+
+            $studentData->push([
+                'student_id'        => $student->id,
+                'student_name'      => $student->name,
+                'guardian_contact'  => $student->guardian_contact,
+                'guardian_email'    => $student->guardian_email,
+                'subject_id'        => $subjectId,
+                'subject_name'      => $subjects->firstWhere('id', $subjectId)->name ?? 'Unknown',
+                'average_transmuted'=> $avgTransmuted,
+                'average_percentage'=> $avgPercentage,
+                'total_assessments' => $scoresWithTransmutation->count(),
+                'failed_count'      => $failedCount,
+                'recent_failed_count' => $recentFailedCount,
+                'failed_scores'     => $allFailedScores,
+                'trend'             => $trend,
+                'risk_severity'     => $riskSeverity,
+                'risk_level'        => $this->getTransmutedRiskLevel($avgTransmuted),
+                'performance_level' => $this->getTransmutedGrade($avgPercentage)['performance'],
+            ]);
+        }
+    }
+
+    $criticalRisk = $studentData->filter(fn($s) => $s['risk_severity'] === 'critical');
+    $highRisk = $studentData->filter(fn($s) => $s['risk_severity'] === 'high');
+    $atRisk = $studentData->filter(fn($s) => $s['average_transmuted'] < 75)
+        ->sortByDesc(fn($s) => [$s['risk_severity'] === 'critical' ? 3 : ($s['risk_severity'] === 'high' ? 2 : 1), $s['failed_count']]);
+
+    $safeStudents = $studentData->filter(fn($s) => $s['average_transmuted'] >= 75)
+        ->sortByDesc('average_transmuted');
+
+    $allStudentsForAlerts = $studentData->filter(fn($s) => $s['failed_count'] >= 3);
+    
+    foreach ($allStudentsForAlerts as $student) {
+        $daysSinceLastSms = $this->getDaysSinceLastAlert($student['student_id'], 'sms', $student['guardian_contact']);
+        $daysSinceLastEmail = $this->getDaysSinceLastAlert($student['student_id'], 'email', $student['guardian_email']);
+        
+        $requiredGap = match($student['risk_severity']) {
+            'critical' => 7,  
+            'high' => 10,      
+            default => 12,      
+        };
+
+// Send SMS
+if (!empty($student['guardian_contact']) && $daysSinceLastSms >= $requiredGap) {
+    $urgencyLevel = match($student['risk_severity']) {
+        'critical' => "URGENT: ",
+        'high' => "High Priority: ",
+        default => ""
+    };
+
+    $message = "{$urgencyLevel}Parent/Guardian of {$student['student_name']}: "
+        . "Current {$student['subject_name']} average is {$student['average_transmuted']}%. "
+        . "Please contact teacher for support.";
+
+    $smsResult = $sms->send($student['guardian_contact'], $message);
+
+    // Log both successful and failed attempts
+    SmsLog::create([
+        'student_id'       => $student['student_id'],
+        'guardian_contact' => $student['guardian_contact'],
+        'message'          => $message,
+        'status'           => $smsResult['status'],
+        'error_message'    => $smsResult['error'],
+        'sent_at'          => now(),
+        'risk_severity'    => $student['risk_severity'],
+        'failed_count'     => $student['failed_count'],
+        'trend'            => $student['trend'],
+    ]);
+}
+
+// Send Email
+if (!empty($student['guardian_email']) && $daysSinceLastEmail >= $requiredGap) {
+    $failedScoresList = $student['failed_scores']->take(5)->map(function($s) {
+        return [
+            'label' => $s->label ?? 'Assessment',
+            'score' => $s->score ?? 0,
+            'max_score' => $s->max_score ?? 100,
+            'transmuted_grade' => $s->transmuted_grade ?? 0,
+            'date' => $s->created_at->format('M d, Y')
+        ];
+    })->toArray();
+
+    $emailResult = $emailService->sendRiskAlert(
+        $student['guardian_email'],
+        $student['student_name'],
+        $student['subject_name'],
+        $student['average_transmuted'],
+        $student['average_percentage'],
+        $student['failed_count'],
+        $student['risk_severity'],
+        $student['trend'],
+        $failedScoresList
+    );
+
+    // Log both successful and failed attempts
+    EmailLog::create([
+        'student_id'       => $student['student_id'],
+        'guardian_email'   => $student['guardian_email'],
+        'message'          => json_encode($failedScoresList),
+        'subject'          => match($student['risk_severity']) {
+            'critical' => "URGENT: Academic Alert for {$student['student_name']}",
+            'high' => "Important: Academic Performance Notice",
+            default => "Academic Update for {$student['student_name']}"
+        },
+        'status'           => $emailResult['status'],
+        'error_message'    => $emailResult['error'],
+        'sent_at'          => now(),
+        'risk_severity'    => $student['risk_severity'],
+        'failed_count'     => $student['failed_count'],
+        'trend'            => $student['trend'],
+    ]);
+}
+    }
+
+    return view('analytics.risk-alerts', compact(
+        'atRisk', 'safeStudents', 'subjects', 'selectedSubject', 'selectedStudent',
+        'criticalRisk', 'highRisk', 'allStudentsForFilter'
+    ));
+}
+
+// Risk severity calculation
+
+private function calculateRiskSeverity($totalFailed, $recentFailed, $avgGrade, $trend, $totalAssessments)
+{
+    $score = 0;
+    
+    // Factor 1: Total failures relative to total assessments
+    $failureRate = $totalAssessments > 0 ? ($totalFailed / $totalAssessments) : 0;
+    if ($failureRate >= 0.6) $score += 3;
+    elseif ($failureRate >= 0.4) $score += 2;
+    elseif ($failureRate >= 0.2) $score += 1;
+    
+    // Factor 2: Recent failure pattern 
+    if ($recentFailed >= 3) $score += 3;
+    elseif ($recentFailed >= 2) $score += 2;
+    elseif ($recentFailed >= 1) $score += 1;
+    
+    // Factor 3: Overall grade
+    if ($avgGrade < 60) $score += 3;
+    elseif ($avgGrade < 70) $score += 2;
+    elseif ($avgGrade < 75) $score += 1;
+    
+    // Factor 4: Trend direction
+    if ($trend === 'declining') $score += 2;
+    elseif ($trend === 'improving') $score -= 1;
+    
+    // Classify severity
+    if ($score >= 7) return 'critical';
+    if ($score >= 4) return 'high';
+    if ($score >= 2) return 'moderate';
+    return 'low';
+}
+ public function insights($studentId)
     {
         $student = User::findOrFail($studentId);
         $teacher = auth()->user();
         
-        $subjects = Subject::where('teacher_id', $teacher->id)
-            ->whereHas('students', function ($query) use ($studentId) {
-                $query->where('user_id', $studentId);
-            })
-            ->get();
+$subjects = Subject::where('teacher_id', $teacher->id)
+    ->whereHas('students', function ($query) use ($studentId) {
+        $query->where('subject_user.user_id', $studentId);
+    })
+    ->get();
+
 
         $studentPerformance = [];
 
@@ -354,38 +516,49 @@ $columnPerformance = $scoresWithTransmutation->groupBy('label')
             'overallStats'
         ));
     }
-
     /**
      * Subject Comparison using transmuted grades
      */
-    public function subjectComparison()
-    {
-        $teacher = auth()->user();
-        $subjects = Subject::where('teacher_id', $teacher->id)->get();
+public function subjectComparison()
+{
+    $teacher = auth()->user();
+    $subjects = Subject::where('teacher_id', $teacher->id)->get();
 
-        $comparison = $subjects->map(function ($subject) {
-            $scoresWithTransmutation = $this->getScoresWithTransmutation($subject->id);
-            
-            if ($scoresWithTransmutation->isEmpty()) {
-                return null;
-            }
+    $comparison = $subjects->map(function ($subject) {
+        $scoresWithTransmutation = $this->getScoresWithTransmutation($subject->id);
+        
+        if ($scoresWithTransmutation->isEmpty()) {
+            return null;
+        }
 
-            return [
-                'subject_name' => $subject->name,
-                'subject_id' => $subject->id,
-                'average_transmuted' => round($scoresWithTransmutation->avg('transmuted_grade'), 2),
-                'average_percentage' => round($scoresWithTransmutation->avg('percentage'), 2),
-                'total_students' => $scoresWithTransmutation->pluck('student_id')->unique()->count(),
-                'total_assessments' => $this->getTotalAssessmentsForSubject($subject->id),
-                'total_submissions' => $scoresWithTransmutation->count(),
-                'highest_transmuted' => $scoresWithTransmutation->max('transmuted_grade'),
-                'lowest_transmuted' => $scoresWithTransmutation->min('transmuted_grade'),
-                'passing_rate' => $scoresWithTransmutation->where('transmuted_grade', '>=', 75)->count() / $scoresWithTransmutation->count() * 100
-            ];
-        })->filter()->sortByDesc('average_transmuted');
+        // Group scores by student and calculate their average
+        $studentAverages = $scoresWithTransmutation->groupBy('student_id')
+            ->map(function ($studentScores) {
+                return round($studentScores->avg('transmuted_grade'), 2);
+            });
 
-        return view('analytics.subject-comparison', compact('comparison'));
-    }
+        // Count students who passed (avg >= 75) and failed (avg < 75)
+        $passedCount = $studentAverages->filter(fn($avg) => $avg >= 75)->count();
+        $failedCount = $studentAverages->filter(fn($avg) => $avg < 75)->count();
+
+        return [
+            'subject_name' => $subject->name,
+            'subject_id' => $subject->id,
+            'average_transmuted' => round($scoresWithTransmutation->avg('transmuted_grade'), 2),
+            'average_percentage' => round($scoresWithTransmutation->avg('percentage'), 2),
+            'total_students' => $scoresWithTransmutation->pluck('student_id')->unique()->count(),
+            'total_assessments' => $this->getTotalAssessmentsForSubject($subject->id),
+            'total_submissions' => $scoresWithTransmutation->count(),
+            'highest_transmuted' => $scoresWithTransmutation->max('transmuted_grade'),
+            'lowest_transmuted' => $scoresWithTransmutation->min('transmuted_grade'),
+            'passing_rate' => ($passedCount / $studentAverages->count()) * 100,
+            'passed_count' => $passedCount,
+            'failed_count' => $failedCount,
+        ];
+    })->filter()->sortByDesc('average_transmuted');
+
+    return view('analytics.subject-comparison', compact('comparison'));
+}
 
     /**
      * Helper method to get scores with transmuted grades - Enhanced
@@ -602,4 +775,627 @@ $columnPerformance = $scoresWithTransmutation->groupBy('label')
             ]
         ]);
     }
+    
+public function engagementAnalytics(Request $request) 
+{
+    $subjectId = $request->get('subject_id');
+    $dateFrom = $request->get('date_from');
+    $dateTo = $request->get('date_to');
+
+    // Get students enrolled in this teacher's subjects
+    $students = User::where('role', 'student')
+        ->when($subjectId, function ($query) use ($subjectId) {
+            $query->whereHas('subjects', function ($q) use ($subjectId) {
+                $q->where('subjects.id', $subjectId);
+            });
+        })
+        ->whereHas('subjects', function ($q) {
+            $q->where('teacher_id', auth()->id());
+        })
+        ->pluck('id');
+
+    // Build engagement query with hybrid subject filtering
+    $engagementQuery = EngagementLog::whereIn('user_id', $students);
+    
+    // Apply date filters
+    if ($dateFrom) {
+        $engagementQuery->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+    }
+    
+    if ($dateTo) {
+        $engagementQuery->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+    }
+
+    // HYBRID FILTERING: login and course_enrollment are global
+    if ($subjectId) {
+        $engagementQuery->where(function($q) use ($subjectId) {
+            $q->where('action', 'login') // Global
+              ->orWhere('action', 'course_enrollment') // Global
+              ->orWhere('subject_id', $subjectId); // Subject-specific
+        });
+    }
+
+    // Aggregate engagement data
+    $engagementSummary = $engagementQuery
+        ->select(
+            'user_id',
+            'action',
+            DB::raw("COUNT(DISTINCT id) as total"),
+            DB::raw("SUM(COALESCE(value, 0)) as total_value")
+        )
+        ->groupBy('user_id', 'action')
+        ->with(['user' => function($query) {
+            $query->where('role', 'student');
+        }])
+        ->get()
+        ->filter(function($record) {
+            return $record->user && $record->user->role === 'student';
+        })
+        ->groupBy('user_id')
+        ->sortByDesc(function ($records) {
+            return $records->sum('total');
+        });
+
+    // Activity statistics with hybrid filtering
+    $activityStats = [
+        'logins' => $this->getActivityCount('login', $students, $subjectId, $dateFrom, $dateTo, true),
+        'quizzes' => $this->getActivityCount('quiz_attempt', $students, $subjectId, $dateFrom, $dateTo),
+        'uploads' => $this->getActivityCount('activity_upload', $students, $subjectId, $dateFrom, $dateTo),
+        'enrollments' => $this->getActivityCount('course_enrollment', $students, $subjectId, $dateFrom, $dateTo, true), // NOW GLOBAL
+        'downloads' => $this->getActivityCount('material_download', $students, $subjectId, $dateFrom, $dateTo),
+    ];
+
+    // Generate heatmap data with hybrid filtering
+    $heatmapData = $this->generateHeatmapData($students, $subjectId, $dateFrom, $dateTo);
+
+    // Get all subjects for filter dropdown
+    $subjects = Subject::where('teacher_id', auth()->id())
+        ->with('teacher:id,name')
+        ->get();
+
+    return view('analytics.engagement', compact(
+        'engagementSummary', 
+        'activityStats', 
+        'subjects', 
+        'subjectId',
+        'heatmapData',
+        'dateFrom',
+        'dateTo'
+    ));
+}
+
+
+private function generateHeatmapData($students, $subjectId, $dateFrom, $dateTo)
+{
+    $query = EngagementLog::whereIn('user_id', $students);
+
+    // Apply date filters
+    if ($dateFrom) {
+        $query->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+    }
+    if ($dateTo) {
+        $query->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+    }
+
+    // Apply hybrid subject filtering - login and course_enrollment are global
+    if ($subjectId) {
+        $query->where(function($q) use ($subjectId) {
+            $q->where('action', 'login')
+              ->orWhere('action', 'course_enrollment')
+              ->orWhere('subject_id', $subjectId);
+        });
+    }
+
+    // Daily activity heatmap
+    $dailyActivity = $query->clone()
+        ->select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('COUNT(*) as total'),
+            'action'
+        )
+        ->groupBy('date', 'action')
+        ->orderBy('date')
+        ->get()
+        ->groupBy('date')
+        ->map(function($records, $date) {
+            return [
+                'date' => $date,
+                'total' => $records->sum('total'),
+                'activities' => [
+                    'login' => $records->where('action', 'login')->sum('total'),
+                    'quiz_attempt' => $records->where('action', 'quiz_attempt')->sum('total'),
+                    'activity_upload' => $records->where('action', 'activity_upload')->sum('total'),
+                    'course_enrollment' => $records->where('action', 'course_enrollment')->sum('total'),
+                    'material_download' => $records->where('action', 'material_download')->sum('total'),
+                ]
+            ];
+        })->values();
+
+    // Weekly pattern heatmap
+    $weeklyPattern = $query->clone()
+        ->select(
+            DB::raw('IF(DAYOFWEEK(created_at) = 1, 6, DAYOFWEEK(created_at) - 2) as day'),  
+            DB::raw('HOUR(created_at) as hour'),
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('day', 'hour')
+        ->get()
+        ->map(function($record) {
+            return [
+                'day' => $record->day,
+                'hour' => $record->hour,
+                'count' => $record->count
+            ];
+        });
+
+    // Student activity matrix
+    $studentMatrix = $query->clone()
+        ->select(
+            'user_id',
+            'action',
+            DB::raw('COUNT(*) as count')
+        )
+        ->groupBy('user_id', 'action')
+        ->with('user:id,name')
+        ->get()
+        ->groupBy('user_id')
+        ->map(function($records, $userId) {
+            $user = $records->first()->user;
+            return [
+                'student_name' => $user ? $user->name : 'Unknown',
+                'activities' => [
+                    'login' => $records->where('action', 'login')->sum('count'),
+                    'quiz_attempt' => $records->where('action', 'quiz_attempt')->sum('count'),
+                    'activity_upload' => $records->where('action', 'activity_upload')->sum('count'),
+                    'course_enrollment' => $records->where('action', 'course_enrollment')->sum('count'),
+                    'material_download' => $records->where('action', 'material_download')->sum('count'),
+                ]
+            ];
+        })->values();
+
+    return [
+        'daily_activity' => $dailyActivity,
+        'weekly_pattern' => $weeklyPattern,
+        'student_matrix' => [
+            'matrix' => $studentMatrix,
+            'activities' => ['login', 'quiz_attempt', 'activity_upload', 'course_enrollment', 'material_download']
+        ]
+    ];
+}
+
+private function formatDailyActivityData($data, $startDate, $endDate)
+{
+    $formatted = [];
+    $current = $startDate->copy();
+    
+    // Initialize all dates with zero counts
+    while ($current->lte($endDate)) {
+        $dateStr = $current->format('Y-m-d');
+        $formatted[$dateStr] = [
+            'date' => $dateStr,
+            'total' => 0,
+            'activities' => [
+                'login' => 0,
+                'quiz_attempt' => 0,
+                'activity_upload' => 0,
+                'course_enrollment' => 0,
+                'material_download' => 0
+            ]
+        ];
+        $current->addDay();
+    }
+    
+    // FIXED: Properly aggregate data by date and action
+    foreach ($data as $record) {
+        $date = $record->date;
+        $action = $record->action;
+        $count = (int) $record->count;
+        
+        if (isset($formatted[$date]) && isset($formatted[$date]['activities'][$action])) {
+            $formatted[$date]['activities'][$action] += $count; // Sum the counts
+        }
+    }
+    
+    // Calculate totals for each date
+    foreach ($formatted as $date => &$dayData) {
+        $dayData['total'] = array_sum($dayData['activities']);
+        
+        // DEBUG: Log daily calculations
+        \Log::info("FIXED - Date {$date} - Activities: " . json_encode($dayData['activities']) . " - Total: " . $dayData['total']);
+    }
+    
+    return array_values($formatted);
+}
+
+private function formatWeeklyPatternData($data)
+{
+    $formatted = [];
+    
+    // Initialize 24 hours x 7 days grid
+    for ($day = 1; $day <= 7; $day++) {
+        for ($hour = 0; $hour < 24; $hour++) {
+            $formatted[] = [
+                'day' => $day - 1, // 0-6 for Monday-Sunday
+                'hour' => $hour,
+                'count' => 0
+            ];
+        }
+    }
+    
+    // FIXED: Properly aggregate activity data by day/hour
+    $aggregatedData = [];
+    foreach ($data as $record) {
+        $key = $record->day_of_week . '-' . $record->hour;
+        if (!isset($aggregatedData[$key])) {
+            $aggregatedData[$key] = [
+                'day_of_week' => $record->day_of_week,
+                'hour' => $record->hour,
+                'count' => 0
+            ];
+        }
+        $aggregatedData[$key]['count'] += (int)$record->count; // Sum all activity types
+    }
+    
+    // Fill formatted array with aggregated data
+    foreach ($aggregatedData as $record) {
+        $dayIndex = ($record['day_of_week'] == 1) ? 6 : $record['day_of_week'] - 2;
+        $hourIndex = (int)$record['hour'];
+        
+        $index = ($dayIndex * 24) + $hourIndex;
+        if (isset($formatted[$index])) {
+            $formatted[$index]['count'] = (int)$record['count'];
+        }
+    }
+    
+    return $formatted;
+}
+
+private function formatStudentMatrixData($data)
+{
+    $matrix = [];
+    $students = [];
+    $activities = ['login', 'quiz_attempt', 'activity_upload', 'course_enrollment', 'material_download'];
+    
+    // FIXED: Ensure we only process student data
+    $groupedData = $data->filter(function($item) {
+        return $item->user && $item->user->role === 'student';
+    })->groupBy('user_id');
+    
+    \Log::info('Matrix Debug - Processing ' . $groupedData->count() . ' students');
+    
+    foreach ($groupedData as $userId => $records) {
+        $student = $records->first()->user;
+        
+        // Additional safety check
+        if (!$student || $student->role !== 'student') {
+            \Log::warning('Matrix Debug - Skipping non-student user: ' . $userId);
+            continue;
+        }
+        
+        $students[] = [
+            'id' => $userId,
+            'name' => $student->name
+        ];
+        
+        $studentActivities = [];
+        foreach ($activities as $activity) {
+            $activityRecord = $records->where('action', $activity)->first();
+            $studentActivities[$activity] = $activityRecord ? (int)$activityRecord->count : 0;
+        }
+        
+        $matrix[] = [
+            'student_id' => $userId,
+            'student_name' => $student->name,
+            'activities' => $studentActivities,
+            'total' => array_sum($studentActivities)
+        ];
+        
+        \Log::info("Matrix Debug - Student: {$student->name}, Activities: " . json_encode($studentActivities) . ", Total: " . array_sum($studentActivities));
+    }
+    
+    // Sort by total activity
+    usort($matrix, function($a, $b) {
+        return $b['total'] - $a['total'];
+    });
+    
+    \Log::info('Matrix Debug - Final matrix has ' . count($matrix) . ' students');
+    
+    return [
+        'matrix' => $matrix,
+        'activities' => $activities,
+        'students' => $students
+    ];
+}
+
+public function logTimeSpent(Request $request) 
+{
+    $validated = $request->validate([
+        'time_spent' => 'required|integer|min:1|max:7200',
+        'page' => 'required|string|max:255',
+    ]);
+
+    EngagementLog::create([
+        'user_id' => auth()->id(),
+        'action' => 'time_spent',
+        'context' => 'page:' . $validated['page'],
+        'value' => $validated['time_spent'],
+    ]);
+
+    return response()->json(['status' => 'success']);
+}
+private function getActivityCount($action, $students, $subjectId, $dateFrom, $dateTo, $isGlobal = false)
+{
+    $query = EngagementLog::whereIn('user_id', $students)
+        ->where('action', $action);
+
+    // Apply date filters
+    if ($dateFrom) {
+        $query->where('created_at', '>=', Carbon::parse($dateFrom)->startOfDay());
+    }
+    if ($dateTo) {
+        $query->where('created_at', '<=', Carbon::parse($dateTo)->endOfDay());
+    }
+
+    // For non-global actions, filter by subject_id
+    if ($subjectId && !$isGlobal) {
+        $query->where('subject_id', $subjectId);
+    }
+
+    return $query->count();
+}
+/**
+ * Display communication logs (SMS & Email)
+ */
+public function communicationLogs(Request $request)
+{
+    $teacher = auth()->user();
+    $type = $request->input('type');
+    $studentId = $request->input('student_id');
+    $riskSeverity = $request->input('risk_severity');
+    $dateFrom = $request->input('date_from');
+
+    // Get teacher's students
+    $students = User::where('role', 'student')
+        ->whereHas('subjects', function ($q) use ($teacher) {
+            $q->where('teacher_id', $teacher->id);
+        })
+        ->orderBy('name')
+        ->get();
+
+    $studentIds = $students->pluck('id');
+
+    // Fetch SMS logs
+    $smsQuery = \App\Models\SmsLog::whereIn('student_id', $studentIds)
+        ->when($studentId, fn($q) => $q->where('student_id', $studentId))
+        ->when($riskSeverity, fn($q) => $q->where('risk_severity', $riskSeverity))
+        ->when($dateFrom, fn($q) => $q->whereDate('sent_at', '>=', $dateFrom));
+
+    // Fetch Email logs
+    $emailQuery = \App\Models\EmailLog::whereIn('student_id', $studentIds)
+        ->when($studentId, fn($q) => $q->where('student_id', $studentId))
+        ->when($riskSeverity, fn($q) => $q->where('risk_severity', $riskSeverity))
+        ->when($dateFrom, fn($q) => $q->whereDate('sent_at', '>=', $dateFrom));
+
+    $smsLogs = collect();
+    $emailLogs = collect();
+
+    if (!$type || $type === 'sms') {
+        $smsLogs = $smsQuery->with('student')->latest('sent_at')->get();
+    }
+
+    if (!$type || $type === 'email') {
+        $emailLogs = $emailQuery->with('student')->latest('sent_at')->get();
+    }
+
+    // Combine and format logs
+    $combinedLogs = collect();
+
+    foreach ($smsLogs as $log) {
+    $combinedLogs->push([
+        'id' => $log->id,
+        'type' => 'sms',
+        'student_id' => $log->student_id,
+        'student_name' => $log->student->name ?? 'Unknown',
+        'contact' => $log->guardian_contact,
+        'message' => $log->message,
+        'subject' => null,
+        'risk_severity' => $log->risk_severity,
+        'failed_count' => $log->failed_count,
+        'trend' => $log->trend,
+        'status' => $log->status ?? 'sent', // NEW
+        'error_message' => $log->error_message ?? null, // NEW
+        'sent_at' => $log->sent_at,
+        'sent_at_human' => $log->sent_at->diffForHumans(),
+    ]);
+}
+
+foreach ($emailLogs as $log) {
+    $combinedLogs->push([
+        'id' => $log->id,
+        'type' => 'email',
+        'student_id' => $log->student_id,
+        'student_name' => $log->student->name ?? 'Unknown',
+        'contact' => $log->guardian_email,
+        'message' => $log->message,
+        'subject' => $log->subject,
+        'risk_severity' => $log->risk_severity,
+        'failed_count' => $log->failed_count,
+        'trend' => $log->trend,
+        'status' => $log->status ?? 'sent', // NEW
+        'error_message' => $log->error_message ?? null, // NEW
+        'sent_at' => $log->sent_at,
+        'sent_at_human' => $log->sent_at->diffForHumans(),
+    ]);
+}
+
+    // Sort by sent_at descending
+    $combinedLogs = $combinedLogs->sortByDesc('sent_at');
+
+    // Calculate statistics
+    $totalCount = $combinedLogs->count();
+    $criticalCount = $combinedLogs->where('risk_severity', 'critical')->count();
+    $uniqueParents = $combinedLogs->unique(function ($log) {
+        return $log['student_id'] . '-' . $log['contact'];
+    })->count();
+
+    return view('analytics.communication-logs', compact(
+        'combinedLogs',
+        'smsLogs',
+        'emailLogs',
+        'students',
+        'totalCount',
+        'criticalCount',
+        'uniqueParents'
+    ));
+}
+
+/**
+ * View individual email log details
+ */
+public function viewEmailLog($id)
+{
+    $teacher = auth()->user();
+    
+    $emailLog = \App\Models\EmailLog::with('student')
+        ->findOrFail($id);
+    
+    // Verify teacher has access to this student
+    $hasAccess = $emailLog->student->subjects()
+        ->where('teacher_id', $teacher->id)
+        ->exists();
+    
+    if (!$hasAccess) {
+        abort(403, 'Unauthorized access to email log');
+    }
+    
+    $failedScores = json_decode($emailLog->message, true) ?? [];
+    
+    return view('analytics.email-log-detail', compact('emailLog', 'failedScores'));
+}
+
+/**
+ * Helper method to get days since last alert
+ */
+private function getDaysSinceLastAlert($studentId, $type, $contact)
+{
+    if ($type === 'sms') {
+        $lastAlert = SmsLog::where('student_id', $studentId)
+            ->where('guardian_contact', $contact)
+            ->latest('sent_at')
+            ->first();
+    } else {
+        $lastAlert = EmailLog::where('student_id', $studentId)
+            ->where('guardian_email', $contact)
+            ->latest('sent_at')
+            ->first();
+    }
+
+    return $lastAlert ? Carbon::parse($lastAlert->sent_at)->diffInDays(now()) : 999;
+}
+/**
+ * Retry failed SMS
+ */
+public function retrySms(Request $request, SmsService $sms)
+{
+    $logId = $request->input('log_id');
+    $log = \App\Models\SmsLog::findOrFail($logId);
+    
+    // Verify teacher has access to this student
+    $teacher = auth()->user();
+    $hasAccess = $log->student->subjects()->where('teacher_id', $teacher->id)->exists();
+    
+    if (!$hasAccess) {
+        return response()->json([
+            'success' => false, 
+            'message' => 'Unauthorized access'
+        ], 403);
+    }
+
+    // Retry sending SMS
+    $result = $sms->send($log->guardian_contact, $log->message);
+
+    // Update the log with new status
+    $log->update([
+        'status' => $result['status'],
+        'error_message' => $result['error'],
+        'sent_at' => $result['success'] ? now() : $log->sent_at,
+    ]);
+
+    return response()->json([
+        'success' => $result['success'],
+        'message' => $result['success'] 
+            ? 'SMS sent successfully!' 
+            : 'Failed to send SMS: ' . $result['error'],
+        'status' => $result['status']
+    ]);
+}
+
+/**
+ * Retry failed email
+ */
+public function retryEmail(Request $request, \App\Services\EmailService $emailService)
+{
+    $logId = $request->input('log_id');
+    $log = \App\Models\EmailLog::findOrFail($logId);
+    
+    // Verify teacher has access to this student
+    $teacher = auth()->user();
+    $hasAccess = $log->student->subjects()->where('teacher_id', $teacher->id)->exists();
+    
+    if (!$hasAccess) {
+        return response()->json([
+            'success' => false, 
+            'message' => 'Unauthorized access'
+        ], 403);
+    }
+
+    // Parse the stored data
+    $failedScores = json_decode($log->message, true) ?? [];
+    
+    // Get fresh student data for accurate info
+    $scoresWithTransmutation = $this->getScoresWithTransmutation(
+        $log->student->subjects()->where('teacher_id', $teacher->id)->first()->id ?? 0,
+        $log->student_id
+    );
+    
+    $avgTransmuted = $scoresWithTransmutation->isNotEmpty() 
+        ? round($scoresWithTransmutation->avg('transmuted_grade'), 2)
+        : 0;
+    
+    $avgPercentage = $scoresWithTransmutation->isNotEmpty()
+        ? round($scoresWithTransmutation->avg('percentage'), 2)
+        : 0;
+    
+    // Get subject name
+    $subject = $log->student->subjects()->where('teacher_id', $teacher->id)->first();
+    $subjectName = $subject ? $subject->name : 'Subject';
+    
+    // Retry sending email
+    $result = $emailService->sendRiskAlert(
+        $log->guardian_email,
+        $log->student->name,
+        $subjectName,
+        $avgTransmuted,
+        $avgPercentage,
+        $log->failed_count ?? 0,
+        $log->risk_severity ?? 'moderate',
+        $log->trend ?? 'stable',
+        $failedScores
+    );
+
+    // Update the log with new status
+    $log->update([
+        'status' => $result['status'],
+        'error_message' => $result['error'],
+        'sent_at' => $result['success'] ? now() : $log->sent_at,
+    ]);
+
+    return response()->json([
+        'success' => $result['success'],
+        'message' => $result['success'] 
+            ? 'Email sent successfully!' 
+            : 'Failed to send email: ' . $result['error'],
+        'status' => $result['status']
+    ]);
+}
 }

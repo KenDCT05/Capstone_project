@@ -31,4 +31,13 @@ public function students()
 public function materials() {
     return $this->hasMany(Material::class);
 }
+public function section()
+{
+    return $this->belongsTo(Section::class);
+}
+
+public function subjectList()
+{
+    return $this->belongsTo(SubjectList::class);
+}
 }

@@ -3,10 +3,10 @@
         <div class="max-w-full mx-auto px-2 sm:px-4">
             <!-- Header Section -->
             <div class="text-center mb-4 sm:mb-6">
-                <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-orange-500 rounded-full mb-3 sm:mb-4 shadow-lg animate-bounce">
+                <div class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 bg-red-500 rounded-full mb-3 sm:mb-4 shadow-lg animate-bounce">
                     <span class="text-2xl sm:text-3xl md:text-4xl">📝</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-red-700 mb-2 drop-shadow-lg px-2">Submit Your Activity! 🚀</h1>
+                <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-red-700 mb-2 drop-shadow-lg px-2">Submit Your Activity! </h1>
                 <p class="text-base sm:text-lg md:text-xl text-red-600 font-semibold px-2">Show your teacher what amazing work you've done!</p>
             </div>
 
@@ -105,7 +105,7 @@
                             <svg class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 mr-2 sm:mr-3 md:mr-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                            <span class="drop-shadow-lg">DOWNLOAD MY WORK! 📥</span>
+                            <span class="drop-shadow-lg">DOWNLOAD MY WORK! </span>
                         </a>
                         
                         <a href="{{ route('materials.student.index') }}" 
@@ -113,7 +113,7 @@
                             <svg class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 mr-2 sm:mr-3 md:mr-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                             </svg>
-                            <span class="drop-shadow-lg">BACK TO MATERIALS! 🔙</span>
+                            <span class="drop-shadow-lg">BACK TO MATERIALS! </span>
                         </a>
                     </div>
                 @else
@@ -137,7 +137,7 @@
                                         <span class="text-lg sm:text-xl md:text-2xl">📁</span>
                                     </div>
                                     <label for="file" class="text-lg sm:text-xl md:text-2xl font-black text-purple-700 mb-2 block px-2">
-                                        Choose Your File! 📎
+                                        Choose Your File!
                                     </label>
                                     <p class="text-sm sm:text-base md:text-lg font-semibold text-purple-600 mb-3 sm:mb-4 px-2">Click the button below to select your work!</p>
                                 </div>
@@ -187,7 +187,7 @@
                                     <svg class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 mr-2 sm:mr-3 md:mr-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                                     </svg>
-                                    <span class="drop-shadow-lg">SUBMIT NOW! 🚀</span>
+                                    <span class="drop-shadow-lg">SUBMIT NOW! </span>
                                 </button>
                                 
                                 <a href="{{ route('materials.student.index') }}" 
@@ -195,7 +195,7 @@
                                     <svg class="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 mr-2 sm:mr-3 md:mr-4 group-hover:animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
-                                    <span class="drop-shadow-lg">CANCEL 🔙</span>
+                                    <span class="drop-shadow-lg">CANCEL </span>
                                 </a>
                             </div>
                         </form>

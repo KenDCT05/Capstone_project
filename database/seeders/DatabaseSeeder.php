@@ -3,15 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Database\Seeders\ScoreSeeder;
-use Database\Seeders\SubjectSeeder;
 use Illuminate\Support\Facades\Hash;
-use Database\Seeders\GradebookSeeder;
-
-
-
 
 class DatabaseSeeder extends Seeder
 {
@@ -20,40 +13,49 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-         $this->call([
-        AdminSeeder::class,
-        // SubjectSeeder::class,
-          GradebookSeeder::class,
-         ]);
+        // Run other seeders first
+        $this->call([
+            AdminSeeder::class,
+            DemoSeeder::class,
+        ]);
 
-    $users = [
-        [
-            'name' => 'Test User Kenn',
-            'email' => 'test1@example.com',
+        // --- Fixed Test Users (optional) ---
+        User::create([
+            'name' => 'Teacher Kenn',
+            'email' => 'Kenardducut05@gmail.com',
             'first_login' => 0,
-            'password' => Hash::make('GSSM2025'),        ],
-        [
-            'name' => 'Test User Yesha',
-            'email' => 'test2@example.com',
-            'first_login' => 0,
-            'password' => Hash::make('GSSM2025'),        ],
-        [
-            'name' => 'Test User Jam',
-            'email' => 'test3@example.com',
-            'first_login' => 0,
-            'password' => Hash::make('GSSM2025'),
-        ],
-        [
-            'name' => 'Teacher Ken',
-            'email' => 'kenardducut05@gmail.com',
             'role' => 'teacher',
-            'first_login' => 0,
-            'password' => Hash::make('GSSM2025'),            
+            'contact_number' => '09757378980',
+            'password' => Hash::make('GSSM2025'),
         ]
-    ];
+    );
 
-    foreach ($users as $userData) {
-        User::factory()->create($userData);
-    }
+        // --- Generate 20 Random Students ---
+        // User::factory()->count(20)->create([
+        //     'role' => 'student',
+        //     'first_login' => 0,
+        //     'password' => Hash::make('GSSM2025'),
+        // ])->each(function ($student, $index) {
+        //     $student->update([
+        //         'name' => 'Test ' . fake()->firstName(),
+        //         'email' => 'test' . ($index + 2) . '@example.com', // start from test2
+        //         'guardian_name' => 'Test Guardian ' . fake()->firstName(),
+        //         'guardian_email' => 'testmail' . ($index + 2) . '@example.com',
+        //         'guardian_contact' => '09' . rand(100000000, 999999999),
+        //     ]);
+        // });
+
+        // --- Generate 5 Teachers ---
+        // User::factory()->count(5)->create([
+        //     'role' => 'teacher',
+        //     'first_login' => 0,
+        //     'password' => Hash::make('GSSM2025'),
+        // ])->each(function ($teacher, $index) {
+        //     $teacher->update([
+        //         'name' => 'Teacher ' . fake()->firstName(),
+        //         'email' => 'teacher' . ($index + 1) . '@example.com',
+        //         'contact_number' => '09' . rand(100000000, 999999999),
+        //     ]);
+        // });
     }
 }

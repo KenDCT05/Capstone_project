@@ -4,145 +4,130 @@
             
             <!-- Enhanced Header Section -->
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 mb-8 overflow-hidden">
-                <div class="bg-gradient-to-r from-red-800 to-red-900 px-8 py-6">
+                <div class="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 px-8 py-6">
                     <h1 class="text-3xl font-bold text-white flex items-center">
                         <svg class="w-8 h-8 mr-3" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                         </svg>
                         Academic Risk Analysis Dashboard
                     </h1>
-                    <p class="text-red-100 mt-2">Students requiring intervention based on transmuted grade performance (&lt;75 average)</p>
+                    <p class="text-red-100 mt-2">Students requiring intervention</p>
                 </div>
                 <div class="px-8 py-6 flex flex-wrap items-center justify-between gap-4">
                     <a href="{{ route('analytics.dashboard') }}"
-                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
+                        class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-600 via-red-700 to-rose-700 hover:from-red-800 hover:to-red-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
                         <svg class="w-4 h-4 mr-2 transform group-hover:-translate-x-1 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                        </svg>
+                        </svg>  
                         <span class="font-medium">Analytics Dashboard</span>
                     </a>
-                    <div class="text-sm text-gray-600 bg-gray-100 px-4 py-2 rounded-full font-medium">
-                        Last updated: {{ now()->format('M d, Y h:i A') }}
+                    <div class="text-sm text-gray-600 bg-gray-100 px-4 py-2 rounded-full font-medium flex items-center space-x-2">
+                        <div id="lastUpdated">Last updated: {{ now()->format('M d, Y h:i A') }}</div>
+
                     </div>
                 </div>
             </div>
 
+            <!-- Priority Action Queue -->
+           
+
             <!-- Enhanced Alert Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-6">
                 <!-- Critical Risk Card -->
-                <div class="group bg-gradient-to-br from-red-600 via-red-700 to-red-800 text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="group bg-gradient-to-r from-red-600 via-red-700 to-rose-700 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-red-400/10 to-red-600/10 rounded-2xl"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-12 -mt-12"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
                     <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">🚨</div>
-                            <div class="text-right">
-                                <p class="text-red-100 text-sm font-medium uppercase tracking-wider">Critical Risk</p>
-                                <p class="text-5xl font-black mt-2">{{ $atRisk->where('risk_level', 'critical')->count() }}</p>
-                            </div>
-                        </div>
-                        <div class="h-1 bg-red-300 rounded-full mb-2"></div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-red-100 text-xs font-medium">&lt;60 Transmuted</p>
-                            <div class="bg-red-500 text-red-100 px-2 py-1 rounded text-xs font-bold">URGENT</div>
-                        </div>
+                        <div class="text-4xl opacity-80 mb-2">🚨</div>
+                        <p class="text-red-100 text-xs font-medium uppercase tracking-wider">Critical Risk</p>
+                        <p class="text-3xl font-black mt-1">{{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }}</p>
+                        <div class="h-1 bg-red-300 rounded-full my-2"></div>
+                        <p class="text-red-100 text-xs">&lt;60 Percentage</p>
                     </div>
                 </div>
 
                 <!-- High Risk Card -->
-                <div class="group bg-gradient-to-br from-orange-600 via-orange-700 to-orange-800 text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="group bg-gradient-to-br from-orange-600 via-orange-700 to-orange-800 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-orange-400/10 to-orange-600/10 rounded-2xl"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-12 -mt-12"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
                     <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">⚠️</div>
-                            <div class="text-right">
-                                <p class="text-orange-100 text-sm font-medium uppercase tracking-wider">High Risk</p>
-                                <p class="text-5xl font-black mt-2">{{ $atRisk->where('risk_level', 'high')->count() }}</p>
-                            </div>
-                        </div>
-                        <div class="h-1 bg-orange-300 rounded-full mb-2"></div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-orange-100 text-xs font-medium">60-69 Transmuted</p>
-                            <div class="bg-orange-500 text-orange-100 px-2 py-1 rounded text-xs font-bold">HIGH</div>
-                        </div>
+                        <div class="text-4xl opacity-80 mb-2">⚠️</div>
+                        <p class="text-orange-100 text-xs font-medium uppercase tracking-wider">High Risk</p>
+                        <p class="text-3xl font-black mt-1">{{ $highRisk->count() ?? $atRisk->where('risk_level', 'high')->count() }}</p>
+                        <div class="h-1 bg-orange-300 rounded-full my-2"></div>
+                        <p class="text-orange-100 text-xs">60-69 Percentage</p>
                     </div>
                 </div>
 
                 <!-- Moderate Risk Card -->
-                <div class="group bg-gradient-to-br from-yellow-600 via-yellow-700 to-yellow-800 text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="group bg-gradient-to-br from-yellow-600 via-yellow-700 to-yellow-800 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-yellow-600/10 rounded-2xl"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-12 -mt-12"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
                     <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">📊</div>
-                            <div class="text-right">
-                                <p class="text-yellow-100 text-sm font-medium uppercase tracking-wider">Moderate Risk</p>
-                                <p class="text-5xl font-black mt-2">{{ $atRisk->where('risk_level', 'moderate')->count() }}</p>
-                            </div>
-                        </div>
-                        <div class="h-1 bg-yellow-300 rounded-full mb-2"></div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-yellow-100 text-xs font-medium">70-74 Transmuted</p>
-                            <div class="bg-yellow-500 text-yellow-100 px-2 py-1 rounded text-xs font-bold">MODERATE</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Total At Risk Card -->
-                <div class="group bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
-                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-blue-600/10 rounded-2xl"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-12 -mt-12"></div>
-                    <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">👥</div>
-                            <div class="text-right">
-                                <p class="text-blue-100 text-sm font-medium uppercase tracking-wider">Total At Risk</p>
-                                <p class="text-5xl font-black mt-2">{{ $atRisk->count() }}</p>
-                            </div>
-                        </div>
-                        <div class="h-1 bg-blue-300 rounded-full mb-2"></div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-blue-100 text-xs font-medium">&lt;75 Transmuted</p>
-                            <div class="bg-blue-500 text-blue-100 px-2 py-1 rounded text-xs font-bold">TOTAL</div>
-                        </div>
+                        <div class="text-4xl opacity-80 mb-2">📊</div>
+                        <p class="text-yellow-100 text-xs font-medium uppercase tracking-wider">Moderate Risk</p>
+                        <p class="text-3xl font-black mt-1">{{ $atRisk->where('risk_level', 'moderate')->count() }}</p>
+                        <div class="h-1 bg-yellow-300 rounded-full my-2"></div>
+                        <p class="text-yellow-100 text-xs">70-74 Percentage</p>
                     </div>
                 </div>
 
                 <!-- Safe Students Card -->
-                <div class="group bg-gradient-to-br from-green-600 via-green-700 to-green-800 text-white p-8 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                <div class="group bg-gradient-to-br from-green-600 via-green-700 to-green-800 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
                     <div class="absolute inset-0 bg-gradient-to-r from-green-400/10 to-green-600/10 rounded-2xl"></div>
-                    <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-5 rounded-full -mr-12 -mt-12"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
                     <div class="relative">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-6xl opacity-80 group-hover:scale-110 transition-transform duration-300">✅</div>
-                            <div class="text-right">
-                                <p class="text-green-100 text-sm font-medium uppercase tracking-wider">Safe Students</p>
-                                <p class="text-5xl font-black mt-2">{{ $safeStudents->count() }}</p>
-                            </div>
-                        </div>
-                        <div class="h-1 bg-green-300 rounded-full mb-2"></div>
-                        <div class="flex justify-between items-center">
-                            <p class="text-green-100 text-xs font-medium">≥75 Transmuted</p>
-                            <div class="bg-green-500 text-green-100 px-2 py-1 rounded text-xs font-bold">SAFE</div>
-                        </div>
+                        <div class="text-4xl opacity-80 mb-2">✅</div>
+                        <p class="text-green-100 text-xs font-medium uppercase tracking-wider">Safe Students</p>
+                        <p class="text-3xl font-black mt-1">{{ $safeStudents->count() }}</p>
+                        <div class="h-1 bg-green-300 rounded-full my-2"></div>
+                        <p class="text-green-100 text-xs">≥75 Percentage</p>
+                    </div>
+                </div>
+                <!-- Total At Risk Card -->
+                <div class="group bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-blue-600/10 rounded-2xl"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
+                    <div class="relative">
+                        <div class="text-4xl opacity-80 mb-2">👥</div>
+                        <p class="text-blue-100 text-xs font-medium uppercase tracking-wider">Total At Risk</p>
+                        <p class="text-3xl font-black mt-1">{{ $atRisk->count() }}</p>
+                        <div class="h-1 bg-blue-300 rounded-full my-2"></div>
+                        <p class="text-blue-100 text-xs">&lt;75 Percentage</p>
+                    </div>
+                </div>
+                <!-- SMS Alerts Card -->
+                <div class="group bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 text-white p-6 rounded-2xl shadow-xl hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-purple-400/10 to-purple-600/10 rounded-2xl"></div>
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
+                    <div class="relative">
+                        <div class="text-4xl opacity-80 mb-2">📱</div>
+                        <p class="text-purple-100 text-xs font-medium uppercase tracking-wider">SMS Ready</p>
+                        <p class="text-3xl font-black mt-1">{{ $atRisk->where('failed_count', '>=', 3)->count() }}</p>
+                        <div class="h-1 bg-purple-300 rounded-full my-2"></div>
+                        <p class="text-purple-100 text-xs">3+ Failures</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Enhanced Filters -->
+            <!-- Enhanced Filters with Quick Actions -->
             <div class="bg-white shadow-xl rounded-2xl p-8 border border-red-100">
-                <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                    <span class="mr-3 text-xl">🔍</span>
-                    Filter Risk Analysis
-                </h3>
-                <form method="GET" action="{{ route('analytics.risk-alerts') }}" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-6 lg:space-y-0">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-2 flex items-center">
+                            <span class="mr-3 text-xl">🔍</span>
+                            Filter Risk Analysis
+                        </h3>
+                    </div>
+
+                </div>
+                
+                <form method="GET" action="{{ route('analytics.risk-alerts') }}" class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end mt-6">
                     <!-- Subject Filter -->
                     <div>
                         <label for="subject_id" class="block text-sm font-bold text-gray-700 mb-2">
                             <span class="flex items-center">
-                                <span class="mr-2">📚</span>
-                                Filter by Subject
+                                 Filter by Subject
                             </span>
                         </label>
                         <select name="subject_id" id="subject_id"
@@ -160,31 +145,29 @@
                     <div>
                         <label for="student_id" class="block text-sm font-bold text-gray-700 mb-2">
                             <span class="flex items-center">
-                                <span class="mr-2">👤</span>
-                                Filter by Student
+                                 Filter by Student
                             </span>
                         </label>
                         <select name="student_id" id="student_id"
                                 class="w-full border-2 border-red-200 rounded-xl px-4 py-3 focus:ring-4 focus:ring-red-200 focus:border-red-500 transition-all duration-300 bg-white shadow-md font-medium">
-                            <option value="">All Students ({{ $safeStudents->merge($atRisk)->unique('student_id')->count() }} total)</option>
-                            @foreach($safeStudents->merge($atRisk)->unique('student_id') as $student)
-                                <option value="{{ $student['student_id'] }}" {{ $selectedStudent == $student['student_id'] ? 'selected' : '' }}>
-                                    {{ $student['student_name'] }}
-                                </option>
-                            @endforeach
+                                <option value="">All Students ({{ $allStudentsForFilter->count() }} total)</option>
+                                @foreach($allStudentsForFilter as $student)
+                                    <option value="{{ $student->id }}" {{ $selectedStudent == $student->id ? 'selected' : '' }}>
+                                        {{ $student->name }}
+                                    </option>
+                                @endforeach
                         </select>
                     </div>
 
                     <!-- Action Buttons -->
                     <div class="flex gap-3">
                         <button type="submit"
-                                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                            <span class="mr-2">🔍</span>
-                            Apply Filters
+                                class="inline-flex items-center px-8 py-3 bg-gradient-to-r from-red-600 via-red-700 to-rose-700 hover:from-red-800 hover:to-red-900 text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                            Apply
                         </button>
                         <a href="{{ route('analytics.risk-alerts') }}" 
                            class="inline-flex items-center px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-xl transition-colors duration-200">
-                            Clear All
+                            Clear
                         </a>
                     </div>
                 </form>
@@ -194,16 +177,15 @@
             @if($atRisk->count() > 0 || $safeStudents->count() > 0)
                 @php
                     $totalStudents = $atRisk->count() + $safeStudents->count();
-                    $criticalPercent = $totalStudents > 0 ? ($atRisk->where('risk_level', 'critical')->count() / $totalStudents) * 100 : 0;
-                    $highPercent = $totalStudents > 0 ? ($atRisk->where('risk_level', 'high')->count() / $totalStudents) * 100 : 0;
+                    $criticalPercent = $totalStudents > 0 ? (($criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count()) / $totalStudents) * 100 : 0;
+                    $highPercent = $totalStudents > 0 ? (($highRisk->count() ?? $atRisk->where('risk_level', 'high')->count()) / $totalStudents) * 100 : 0;
                     $moderatePercent = $totalStudents > 0 ? ($atRisk->where('risk_level', 'moderate')->count() / $totalStudents) * 100 : 0;
                     $safePercent = $totalStudents > 0 ? ($safeStudents->count() / $totalStudents) * 100 : 0;
                 @endphp
                 
                 <div class="bg-white rounded-2xl shadow-xl p-8 border border-red-100">
                     <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center">
-                        <span class="mr-3 text-xl">📈</span>
-                        Risk Distribution Overview
+                        📈 Risk Distribution Overview & Trends
                     </h3>
                     
                     <div class="mb-6">
@@ -238,11 +220,11 @@
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-sm">
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-red-600 rounded-full mr-2"></div>
-                                <span class="text-gray-700">Critical: {{ $atRisk->where('risk_level', 'critical')->count() }} ({{ round($criticalPercent, 1) }}%)</span>
+                                <span class="text-gray-700">Critical: {{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }} ({{ round($criticalPercent, 1) }}%)</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-orange-500 rounded-full mr-2"></div>
-                                <span class="text-gray-700">High: {{ $atRisk->where('risk_level', 'high')->count() }} ({{ round($highPercent, 1) }}%)</span>
+                                <span class="text-gray-700">High: {{ $highRisk->count() ?? $atRisk->where('risk_level', 'high')->count() }} ({{ round($highPercent, 1) }}%)</span>
                             </div>
                             <div class="flex items-center">
                                 <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
@@ -257,21 +239,23 @@
                 </div>
             @endif
 
-            <!-- At Risk Students Table -->
+            <!-- Enhanced At Risk Students Table -->
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-500 to-red-600 px-8 py-6">
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                         <div>
                             <h2 class="text-2xl font-bold text-white flex items-center">
-                                <span class="mr-3 text-2xl">⚠️</span>
-                                Students Requiring Intervention
+                                ⚠️ Students Requiring Intervention
                             </h2>
-                            <p class="text-red-100 mt-1">Based on transmuted grade performance below 75</p>
+                            <p class="text-red-100 mt-1">Based on performance below 75</p>
                         </div>
-                        <div class="mt-4 md:mt-0">
+                        <div class="mt-4 md:mt-0 flex space-x-2">
                             <span class="bg-white bg-opacity-20 text-white px-4 py-2 rounded-full font-bold">
                                 {{ $atRisk->count() }} Students
                             </span>
+                            <div class="bg-white bg-opacity-20 text-white px-3 py-1 rounded-full text-sm">
+                                {{ $atRisk->where('failed_count', '>=', 3)->count() }} SMS Ready
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -284,6 +268,7 @@
                                 <th class="px-6 py-4 text-left font-bold uppercase tracking-wider text-gray-700 text-sm">Subject</th>
                                 <th class="px-6 py-4 text-left font-bold uppercase tracking-wider text-gray-700 text-sm">Performance</th>
                                 <th class="px-6 py-4 text-left font-bold uppercase tracking-wider text-gray-700 text-sm">Risk Analysis</th>
+                                <th class="px-6 py-4 text-left font-bold uppercase tracking-wider text-gray-700 text-sm">Communication Status</th>
                                 <th class="px-6 py-4 text-left font-bold uppercase tracking-wider text-gray-700 text-sm">Actions</th>
                             </tr>
                         </thead>
@@ -303,6 +288,15 @@
                                                 <div class="text-sm text-gray-500">
                                                     ID: {{ $student['student_id'] }}
                                                 </div>
+                                                @if($student['guardian_contact'])
+                                                    <div class="text-xs text-green-600 font-medium">
+                                                        Contact: {{ $student['guardian_contact'] }}
+                                                    </div>
+                                                @else
+                                                    <div class="text-xs text-red-600 font-medium">
+                                                        No guardian contact
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
@@ -311,6 +305,11 @@
                                     <td class="px-6 py-6">
                                         <div class="text-sm font-medium text-gray-900">{{ $student['subject_name'] }}</div>
                                         <div class="text-xs text-gray-500">{{ $student['total_assessments'] }} assessments</div>
+                                        @if(isset($student['recent_failed_count']) && $student['recent_failed_count'] > 0)
+                                            <div class="text-xs text-orange-600 font-medium mt-1">
+                                                {{ $student['recent_failed_count'] }} failed recently
+                                            </div>
+                                        @endif
                                     </td>
 
                                     <!-- Performance -->
@@ -336,27 +335,47 @@
                                                       ($student['performance_level'] === 'Passed' ? 'text-orange-700' : 'text-red-700')))) }}">
                                                 {{ $student['performance_level'] }}
                                             </div>
+                                            <div class="mt-1 text-xs">
+                                                <span class="text-gray-500">Failed:</span>
+                                                <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full font-bold ml-1">
+                                                    {{ $student['failed_count'] }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </td>
 
                                     <!-- Risk Analysis -->
                                     <td class="px-6 py-6">
                                         <div class="space-y-2">
-                                            <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-md
-                                                {{ $student['risk_level'] === 'critical' ? 'bg-red-100 text-red-800 border-2 border-red-300 animate-pulse' : 
-                                                   ($student['risk_level'] === 'high' ? 'bg-orange-100 text-orange-800 border-2 border-orange-300' : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300') }}">
-                                                @if($student['risk_level'] === 'critical')
-                                                    🚨 {{ $student['risk_level'] }}
-                                                @elseif($student['risk_level'] === 'high')
-                                                    ⚠️ {{ $student['risk_level'] }}
-                                                @else
-                                                    📊 {{ $student['risk_level'] }}
+                                            <div class="flex items-center space-x-2">
+                                                <span class="inline-flex items-center px-3 py-2 rounded-full text-sm font-bold uppercase tracking-wider shadow-md
+                                                    {{ ($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'critical' ? 'bg-red-100 text-red-800 border-2 border-red-300 animate-pulse' : 
+                                                       (($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'high' ? 'bg-orange-100 text-orange-800 border-2 border-orange-300' : 'bg-yellow-100 text-yellow-800 border-2 border-yellow-300') }}">
+                                                    @if(($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'critical')
+                                                        Critical
+                                                    @elseif(($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'high')
+                                                        High
+                                                    @else
+                                                        Moderate
+                                                    @endif
+                                                </span>
+                                                
+                                                @if(isset($student['trend']))
+                                                    <div class="text-xs font-medium">
+                                                        @if($student['trend'] === 'improving')
+                                                            <span class="text-green-600 bg-green-100 px-2 py-1 rounded-full">Improving</span>
+                                                        @elseif($student['trend'] === 'declining')
+                                                            <span class="text-red-600 bg-red-100 px-2 py-1 rounded-full">Declining</span>
+                                                        @else
+                                                            <span class="text-gray-600 bg-gray-100 px-2 py-1 rounded-full">Stable</span>
+                                                        @endif
+                                                    </div>
                                                 @endif
-                                            </span>
+                                            </div>
                                             <div class="text-xs text-gray-600">
-                                                @if($student['risk_level'] === 'critical')
+                                                @if(($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'critical')
                                                     Immediate intervention needed
-                                                @elseif($student['risk_level'] === 'high') 
+                                                @elseif(($student['risk_severity'] ?? $student['risk_level'] ?? 'moderate') === 'high') 
                                                     Requires close monitoring
                                                 @else
                                                     Additional support recommended
@@ -365,23 +384,85 @@
                                         </div>
                                     </td>
 
+                                    <!-- SMS Status -->
+<td class="px-6 py-6">
+    @php
+        $lastSms = \App\Models\SmsLog::where('student_id', $student['student_id'])
+            ->latest('sent_at')
+            ->first();
+
+        $lastSentAt = $lastSms ? \Carbon\Carbon::parse($lastSms->sent_at) : null;
+
+        $requiredGap = match($student['risk_severity'] ?? 'moderate') {
+            'critical' => 3,
+            'high' => 5,
+            default => 7
+        };
+
+        $daysSinceLastSms = $lastSentAt ? $lastSentAt->diffInDays(now()) : null;
+        $nextSmsDate = $lastSentAt ? $lastSentAt->copy()->addDays($requiredGap) : now();
+    @endphp
+
+    <div class="space-y-1">
+        @if($student['failed_count'] >= 3)
+            @if($student['guardian_contact'])
+                @if($lastSentAt && $daysSinceLastSms < $requiredGap)
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Sent {{ $lastSentAt->diffForHumans() }}
+                    </span>
+                    <div class="text-xs text-gray-500">
+                        Next: {{ $nextSmsDate->diffForHumans() }}
+                    </div>
+                @else
+                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        Ready to send
+                    </span>
+                    <button onclick="sendSingleSMS('{{ $student['student_id'] }}')" 
+                            class="text-xs text-blue-600 hover:text-blue-800 font-medium">
+                        Send now
+                    </button>
+                @endif
+            @else
+                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                    No contact info
+                </span>
+            @endif
+        @else
+            <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                Not triggered
+            </span>
+            <div class="text-xs text-gray-500">
+                Need {{ 3 - $student['failed_count'] }} more fail{{ 3 - $student['failed_count'] > 1 ? 's' : '' }}
+            </div>
+        @endif
+    </div>
+</td>
+
+
+
                                     <!-- Actions -->
                                     <td class="px-6 py-6">
                                         <div class="flex flex-col space-y-2">
                                             <a href="{{ route('analytics.insights', $student['student_id']) }}" 
                                                class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
-                                                📊 Full Report
+                                                Full Report
                                             </a>
-                                            <button onclick="showInterventionModal('{{ $student['student_name'] }}', '{{ $student['risk_level'] }}', {{ $student['average_transmuted'] }})" 
+                                            <button onclick="showInterventionModal('{{ $student['student_name'] }}', '{{ $student['risk_severity'] ?? $student['risk_level'] ?? 'moderate' }}', {{ $student['average_transmuted'] }}, '{{ $student['trend'] ?? 'stable' }}', {{ $student['failed_count'] }})" 
                                                     class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-lg hover:from-red-700 hover:to-red-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
-                                                🎯 Intervention
+                                                Intervention
                                             </button>
+                                            @if($student['guardian_contact'])
+                                                <button onclick="contactParent('{{ $student['guardian_contact'] }}', '{{ $student['student_name'] }}')" 
+                                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 text-white font-semibold rounded-lg hover:from-green-700 hover:to-green-800 transition-all duration-300 shadow-md hover:shadow-lg text-sm">
+                                                    Contact Parent
+                                                </button>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-12 text-center">
+                                    <td colspan="6" class="px-6 py-12 text-center">
                                         <div class="flex flex-col items-center">
                                             <div class="text-6xl mb-4">🎉</div>
                                             <div class="text-2xl font-bold text-gray-600 mb-2">No Students at Risk!</div>
@@ -432,6 +513,9 @@
                                         <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-200 text-green-800">
                                             {{ $student['average_transmuted'] }}
                                         </span>
+                                        @if(isset($student['trend']) && $student['trend'] === 'improving')
+                                            <div class="text-xs text-green-600 mt-1">↗ Improving</div>
+                                        @endif
                                     </div>
                                 </div>
                             @endforeach
@@ -445,214 +529,44 @@
                 </div>
             @endif
 
-            <!-- Enhanced Intervention Recommendations -->
-            @if($atRisk->isNotEmpty())
-                <div class="bg-white shadow-xl rounded-2xl p-8 border border-red-100">
-                    <h3 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
-                        <span class="mr-3 text-2xl">💡</span>
-                        Evidence-Based Intervention Strategies
-                    </h3>
-                    
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                        @if($atRisk->where('risk_level', 'critical')->count() > 0)
-                            <div class="border-l-4 border-red-500 pl-6 bg-gradient-to-br from-red-50 to-red-100 p-6 rounded-xl">
-                                <div class="flex items-center mb-4">
-                                    <span class="text-2xl mr-3">🚨</span>
-                                    <h4 class="font-bold text-red-800 text-lg">Critical Risk Response</h4>
-                                </div>
-                                <div class="bg-red-200 text-red-800 px-3 py-1 rounded-full text-xs font-bold mb-4 inline-block">
-                                    &lt;60 TRANSMUTED GRADE
-                                </div>
-                                <ul class="text-sm text-gray-700 space-y-3 font-medium">
-                                    <li class="flex items-start">
-                                        <span class="text-red-500 mr-2 font-bold">1.</span>
-                                        <div>
-                                            <strong>Immediate 1-on-1 intervention</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Schedule within 48 hours</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-red-500 mr-2 font-bold">2.</span>
-                                        <div>
-                                            <strong>Parent/guardian conference</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Urgent communication required</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-red-500 mr-2 font-bold">3.</span>
-                                        <div>
-                                            <strong>Individual learning plan</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Focus on foundational skills</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-red-500 mr-2 font-bold">4.</span>
-                                        <div>
-                                            <strong>Daily progress monitoring</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Track small improvements</div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        @endif
 
-                        @if($atRisk->where('risk_level', 'high')->count() > 0)
-                            <div class="border-l-4 border-orange-500 pl-6 bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-xl">
-                                <div class="flex items-center mb-4">
-                                    <span class="text-2xl mr-3">⚠️</span>
-                                    <h4 class="font-bold text-orange-800 text-lg">High Risk Support</h4>
-                                </div>
-                                <div class="bg-orange-200 text-orange-800 px-3 py-1 rounded-full text-xs font-bold mb-4 inline-block">
-                                    60-69 TRANSMUTED GRADE
-                                </div>
-                                <ul class="text-sm text-gray-700 space-y-3 font-medium">
-                                    <li class="flex items-start">
-                                        <span class="text-orange-500 mr-2 font-bold">1.</span>
-                                        <div>
-                                            <strong>Intensive tutoring program</strong>
-                                            <div class="text-xs text-gray-600 mt-1">3x per week minimum</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-orange-500 mr-2 font-bold">2.</span>
-                                        <div>
-                                            <strong>Small group interventions</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Focus on specific skill gaps</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-orange-500 mr-2 font-bold">3.</span>
-                                        <div>
-                                            <strong>Weekly progress meetings</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Student-teacher conferences</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-orange-500 mr-2 font-bold">4.</span>
-                                        <div>
-                                            <strong>Parent communication</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Bi-weekly updates</div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        @endif
-
-                        @if($atRisk->where('risk_level', 'moderate')->count() > 0)
-                            <div class="border-l-4 border-yellow-500 pl-6 bg-gradient-to-br from-yellow-50 to-yellow-100 p-6 rounded-xl">
-                                <div class="flex items-center mb-4">
-                                    <span class="text-2xl mr-3">📊</span>
-                                    <h4 class="font-bold text-yellow-800 text-lg">Moderate Risk Prevention</h4>
-                                </div>
-                                <div class="bg-yellow-200 text-yellow-800 px-3 py-1 rounded-full text-xs font-bold mb-4 inline-block">
-                                    70-74 TRANSMUTED GRADE
-                                </div>
-                                <ul class="text-sm text-gray-700 space-y-3 font-medium">
-                                    <li class="flex items-start">
-                                        <span class="text-yellow-500 mr-2 font-bold">1.</span>
-                                        <div>
-                                            <strong>Enhanced study resources</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Additional practice materials</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-yellow-500 mr-2 font-bold">2.</span>
-                                        <div>
-                                            <strong>Peer study groups</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Collaborative learning</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-yellow-500 mr-2 font-bold">3.</span>
-                                        <div>
-                                            <strong>Review sessions</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Before major assessments</div>
-                                        </div>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <span class="text-yellow-500 mr-2 font-bold">4.</span>
-                                        <div>
-                                            <strong>Study skills training</strong>
-                                            <div class="text-xs text-gray-600 mt-1">Time management & organization</div>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </div>
-                        @endif
-                    </div>
-
-                    <!-- Success Metrics -->
-                    <div class="mt-8 bg-gradient-to-r from-blue-50 to-blue-100 p-6 rounded-xl border border-blue-200">
-                        <h4 class="font-bold text-blue-800 text-lg mb-4 flex items-center">
-                            <span class="mr-2">📈</span>
-                            Success Metrics & Timeline
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                            <div>
-                                <div class="font-bold text-blue-700">Short Term (2-4 weeks)</div>
-                                <ul class="text-gray-700 mt-2 space-y-1">
-                                    <li>• 5+ point improvement in transmuted grade</li>
-                                    <li>• Consistent assessment submission</li>
-                                    <li>• Improved engagement metrics</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="font-bold text-blue-700">Medium Term (1-2 months)</div>
-                                <ul class="text-gray-700 mt-2 space-y-1">
-                                    <li>• Achieve 75+ transmuted grade average</li>
-                                    <li>• Reduced achievement gap</li>
-                                    <li>• Self-advocacy development</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <div class="font-bold text-blue-700">Long Term (3+ months)</div>
-                                <ul class="text-gray-700 mt-2 space-y-1">
-                                    <li>• Sustained performance improvement</li>
-                                    <li>• Independent learning skills</li>
-                                    <li>• Academic confidence building</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
 
             <!-- Export and Action Panel -->
             <div class="bg-white shadow-xl rounded-2xl p-6 border border-red-100">
                 <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                     <div class="flex items-center space-x-4">
                         <div class="text-sm text-gray-600 font-medium">
-                            📊 Risk analysis based on transmuted grading system
+                            Risk analysis
                         </div>
                         <div class="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
-                            Updated: {{ now()->format('M d, Y h:i A') }}
+                            <span id="lastUpdateTime">Updated: {{ now()->format('M d, Y h:i A') }}</span>
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-3">
                         <button onclick="window.print()"
                                 class="inline-flex items-center px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                            <span class="mr-2">🖨️</span>
                             Print Report
                         </button>
                         <button onclick="exportRiskData()"
                                 class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                            <span class="mr-2">📊</span>
                             Export Analysis
                         </button>
-                        <button onclick="generateInterventionPlan()"
-                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                            <span class="mr-2">🎯</span>
-                            Generate Plan
-                        </button>
+                        <a href="{{ route('analytics.communication-logs') }}"
+    class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-700 hover:from-blue-800 hover:to-indigo-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 group">
+    <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+    </svg>
+    <span class="font-medium">View Communication Logs</span>
+</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Intervention Modal -->
+    <!-- Enhanced Intervention Modal -->
     <div id="interventionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div class="bg-gradient-to-r from-red-600 to-red-700 px-6 py-4 rounded-t-2xl">
                 <div class="flex items-center justify-between">
                     <h3 class="text-xl font-bold text-white">Intervention Strategy</h3>
@@ -664,10 +578,10 @@
                     <!-- Content will be populated by JavaScript -->
                 </div>
                 <div class="mt-6 flex gap-3 justify-end">
-                    <button onclick="closeInterventionModal()" class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium">
+                    <button onclick="closeInterventionModal()" 
+                            class="px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-700 rounded-lg font-medium">
                         Close
                     </button>
-
                 </div>
             </div>
         </div>
@@ -675,7 +589,88 @@
 
     <!-- Enhanced Scripts -->
     <script>
-        // Export functionality
+        // Global variables for tracking
+        let refreshInterval;
+        const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600 text-white' : 'bg-red-600 text-white'
+            }`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // // Enhanced SMS functionality
+        // function sendAllSMSAlerts() {
+        //     const eligibleCount = {{ $atRisk->where('failed_count', '>=', 3)->count() }};
+            
+        //     if (eligibleCount === 0) {
+        //         showNotification('No students eligible for SMS alerts', 'error');
+        //         return;
+        //     }
+
+        //     if (!confirm(`Send SMS alerts to ${eligibleCount} students? This will only send to students who haven't received alerts recently.`)) {
+        //         return;
+        //     }
+
+        //     fetch('/api/risk-alerts/send-all-sms', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        //         },
+        //         body: JSON.stringify({
+        //             subject_id: '{{ $selectedSubject }}',
+        //             student_id: '{{ $selectedStudent }}'
+        //         })
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         if (data.success) {
+        //             showNotification(`SMS sent to ${data.sent_count} students`, 'success');
+        //             setTimeout(() => window.location.reload(), 2000);
+        //         } else {
+        //             showNotification(data.message || 'Failed to send SMS alerts', 'error');
+        //         }
+        //     })
+        //     .catch(error => {
+        //         console.error('Error sending SMS:', error);
+        //         showNotification('Failed to send SMS alerts', 'error');
+        //     });
+        // }
+
+        function sendSingleSMS(studentId) {
+            fetch('/api/risk-alerts/send-sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ student_id: studentId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showNotification('SMS sent successfully', 'success');
+                    setTimeout(() => window.location.reload(), 1500);
+                } else {
+                    showNotification(data.message || 'Failed to send SMS', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error sending SMS:', error);
+                showNotification('Failed to send SMS', 'error');
+            });
+        }
+
+        // Enhanced export functionality
         function exportRiskData() {
             const riskData = {
                 report_date: new Date().toISOString(),
@@ -687,10 +682,11 @@
                 summary: {
                     total_students_analyzed: {{ $atRisk->count() + $safeStudents->count() }},
                     total_at_risk: {{ $atRisk->count() }},
-                    critical_risk: {{ $atRisk->where('risk_level', 'critical')->count() }},
-                    high_risk: {{ $atRisk->where('risk_level', 'high')->count() }},
+                    critical_risk: {{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }},
+                    high_risk: {{ $highRisk->count() ?? $atRisk->where('risk_level', 'high')->count() }},
                     moderate_risk: {{ $atRisk->where('risk_level', 'moderate')->count() }},
-                    safe_students: {{ $safeStudents->count() }}
+                    safe_students: {{ $safeStudents->count() }},
+                    sms_ready: {{ $atRisk->where('failed_count', '>=', 3)->count() }}
                 },
                 risk_thresholds: {
                     critical: 'Below 60 transmuted grade',
@@ -698,6 +694,16 @@
                     moderate: '70-74 transmuted grade',
                     safe: '75+ transmuted grade'
                 },
+                actionable_insights: {
+                    immediate_interventions_needed: {{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }},
+                    students_needing_sms_alerts: {{ $atRisk->where('failed_count', '>=', 3)->count() }},
+                    parent_conferences_recommended: {{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }}
+                },
+                next_steps: [
+                    "Contact parents of {{ $criticalRisk->count() ?? $atRisk->where('risk_level', 'critical')->count() }} critical risk students",
+                    "Schedule tutoring for {{ $highRisk->count() ?? $atRisk->where('risk_level', 'high')->count() }} high risk students", 
+                    "Send SMS alerts to {{ $atRisk->where('failed_count', '>=', 3)->count() }} students with multiple failures"
+                ],
                 students: {
                     at_risk: @json($atRisk->values()),
                     safe: @json($safeStudents->take(20)->values())
@@ -712,16 +718,48 @@
             linkElement.setAttribute('href', dataUri);
             linkElement.setAttribute('download', exportFileDefaultName);
             linkElement.click();
+            
+            showNotification('Risk analysis exported successfully', 'success');
         }
 
-        // Intervention modal functions
-        function showInterventionModal(studentName, riskLevel, averageTransmuted) {
+   
+
+        // Enhanced intervention modal functions
+        function showInterventionModal(studentName, riskLevel, averageTransmuted, trend, failedCount) {
             const modal = document.getElementById('interventionModal');
             const content = document.getElementById('interventionContent');
             
             let strategies = '';
             let timeline = '';
             let resources = '';
+            let trendInfo = '';
+            
+            // Trend analysis
+            if (trend === 'improving') {
+                trendInfo = `
+                    <div class="bg-green-50 border border-green-200 p-4 rounded-lg mb-4">
+                        <div class="flex items-center">
+                            <span class="text-green-600 mr-2">📈</span>
+                            <div>
+                                <h5 class="font-bold text-green-800">Positive Trend Detected</h5>
+                                <p class="text-sm text-green-700">Student is showing improvement. Continue current interventions and provide encouragement.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else if (trend === 'declining') {
+                trendInfo = `
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-lg mb-4">
+                        <div class="flex items-center">
+                            <span class="text-red-600 mr-2">📉</span>
+                            <div>
+                                <h5 class="font-bold text-red-800">Declining Performance Alert</h5>
+                                <p class="text-sm text-red-700">Student performance is worsening. Immediate escalation of interventions required.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
             
             if (riskLevel === 'critical') {
                 strategies = `
@@ -734,11 +772,12 @@
                             <li>• Create individualized remediation plan</li>
                             <li>• Daily check-ins and progress monitoring</li>
                             <li>• Consider peer tutoring or mentorship</li>
+                            <li>• Coordinate with counseling services</li>
                         </ul>
                     </div>
                 `;
-                timeline = '48 hours to initiate, daily monitoring';
-                resources = 'Counseling services, tutoring program, parent conference';
+                timeline = '24 hours to initiate, daily monitoring required';
+                resources = 'Counseling services, tutoring program, parent conference, possible referral to special services';
             } else if (riskLevel === 'high') {
                 strategies = `
                     <div class="border-l-4 border-orange-500 pl-4 bg-orange-50 p-4 rounded-lg mb-4">
@@ -750,11 +789,12 @@
                             <li>• Study skills assessment and training</li>
                             <li>• Parent communication bi-weekly</li>
                             <li>• Small group interventions</li>
+                            <li>• Modified assessment accommodations</li>
                         </ul>
                     </div>
                 `;
                 timeline = '1 week to implement, weekly reviews';
-                resources = 'Tutoring program, additional practice materials';
+                resources = 'Tutoring program, additional practice materials, parent communication system';
             } else {
                 strategies = `
                     <div class="border-l-4 border-yellow-500 pl-4 bg-yellow-50 p-4 rounded-lg mb-4">
@@ -766,41 +806,53 @@
                             <li>• Time management coaching</li>
                             <li>• Monthly progress check-ins</li>
                             <li>• Peer collaboration opportunities</li>
+                            <li>• Organizational skills support</li>
                         </ul>
                     </div>
                 `;
                 timeline = '2 weeks to implement, bi-weekly reviews';
-                resources = 'Study materials, peer study groups';
+                resources = 'Study materials, peer study groups, organizational tools';
             }
             
             content.innerHTML = `
                 <div class="mb-6">
-                    <h4 class="text-lg font-bold text-gray-800 mb-2">Student: ${studentName}</h4>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+                    <h4 class="text-xl font-bold text-gray-800 mb-4">Intervention Plan: ${studentName}</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm bg-gray-50 p-4 rounded-lg">
                         <div>
-                            <span class="text-gray-600">Risk Level:</span>
-                            <span class="ml-2 font-semibold text-${riskLevel === 'critical' ? 'red' : riskLevel === 'high' ? 'orange' : 'yellow'}-700">${riskLevel.toUpperCase()}</span>
+                            <span class="text-gray-600 block">Risk Level:</span>
+                            <span class="font-semibold text-${riskLevel === 'critical' ? 'red' : riskLevel === 'high' ? 'orange' : 'yellow'}-700">${riskLevel.toUpperCase()}</span>
                         </div>
                         <div>
-                            <span class="text-gray-600">Current Average:</span>
-                            <span class="ml-2 font-semibold">${averageTransmuted} transmuted</span>
+                            <span class="text-gray-600 block">Current Average:</span>
+                            <span class="font-semibold">${averageTransmuted} transmuted</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600 block">Failed Count:</span>
+                            <span class="font-semibold text-red-600">${failedCount} assessments</span>
+                        </div>
+                        <div>
+                            <span class="text-gray-600 block">Trend:</span>
+                            <span class="font-semibold text-${trend === 'improving' ? 'green' : trend === 'declining' ? 'red' : 'gray'}-600">${trend}</span>
                         </div>
                     </div>
                 </div>
                 
+                ${trendInfo}
                 ${strategies}
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="bg-blue-50 p-4 rounded-lg border border-blue-200">
                         <h5 class="font-bold text-blue-800 mb-2">Timeline</h5>
                         <p class="text-sm text-gray-700">${timeline}</p>
                     </div>
-                    <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="bg-green-50 p-4 rounded-lg border border-green-200">
                         <h5 class="font-bold text-green-800 mb-2">Resources Needed</h5>
                         <p class="text-sm text-gray-700">${resources}</p>
                     </div>
                 </div>
                 
+                <div class="mt-6">
+                </div>
             `;
             
             modal.classList.remove('hidden');
@@ -810,70 +862,62 @@
             document.getElementById('interventionModal').classList.add('hidden');
         }
 
-        function saveInterventionPlan() {
-            const notes = document.getElementById('interventionNotes').value;
-            // Here you would typically send this to your backend
-            alert('Intervention plan saved! (This would integrate with your backend system)');
-            closeInterventionModal();
+
+        function contactParent(phoneNumber, studentName) {
+            if (confirm(`Contact parent/guardian at ${phoneNumber} for ${studentName}?`)) {
+                // This would typically integrate with your phone system or create a communication log
+                window.open(`tel:${phoneNumber}`);
+                
+                // Log the contact attempt
+                fetch('/api/contact-log', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        phone_number: phoneNumber,
+                        student_name: studentName,
+                        contact_type: 'phone_call',
+                        timestamp: new Date().toISOString()
+                    })
+                });
+                
+                showNotification(`Contact logged for ${studentName}`, 'success');
+            }
         }
 
-        function generateInterventionPlan() {
-            const atRiskCount = {{ $atRisk->count() }};
-            if (atRiskCount === 0) {
-                alert('No students currently at risk. All students are performing well!');
-                return;
-            }
-            
-            const planData = {
-                generated_date: new Date().toISOString(),
-                total_at_risk: atRiskCount,
-                risk_breakdown: {
-                    critical: {{ $atRisk->where('risk_level', 'critical')->count() }},
-                    high: {{ $atRisk->where('risk_level', 'high')->count() }},
-                    moderate: {{ $atRisk->where('risk_level', 'moderate')->count() }}
-                },
-                recommended_actions: [
-                    "Implement immediate interventions for critical risk students",
-                    "Schedule weekly progress monitoring meetings", 
-                    "Coordinate with counseling services for support",
-                    "Develop individualized learning plans",
-                    "Establish parent communication protocols",
-                    "Monitor effectiveness of interventions monthly"
-                ],
-                students: @json($atRisk->values())
-            };
-
-            const dataStr = JSON.stringify(planData, null, 2);
-            const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
-            const exportFileDefaultName = 'intervention-plan-' + new Date().toISOString().split('T')[0] + '.json';
-
-            const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
-            linkElement.click();
-        }
-
-        // Auto-refresh functionality (every 10 minutes)
-        setTimeout(() => {
-            if (confirm('Risk data may have changed. Would you like to refresh for the latest information?')) {
-                window.location.reload();
-            }
-        }, 10 * 60 * 1000);
-
-        // Quick filter functionality
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+
+            
+            // Auto-submit form when filters change
             const subjectFilter = document.getElementById('subject_id');
-            const studentFilter = document.getElementById('student_id');
+            const riskLevelFilter = document.getElementById('risk_level');
             
             if (subjectFilter) {
                 subjectFilter.addEventListener('change', function() {
                     if (this.value) {
-                        // Auto-submit form when subject is selected
                         setTimeout(() => {
                             this.closest('form').submit();
                         }, 100);
                     }
                 });
+            }
+            
+            if (riskLevelFilter) {
+                riskLevelFilter.addEventListener('change', function() {
+                    setTimeout(() => {
+                        this.closest('form').submit();
+                    }, 100);
+                });
+            }
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
             }
         });
     </script>

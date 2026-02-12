@@ -17,15 +17,17 @@ class QuizScoreMail extends Mailable
     public $maxScore;
     public $percentage;
 
-    public function __construct($student, $quiz, $score, $maxScore, $percentage)
-    {
-        $this->student = $student;
-        $this->quiz = $quiz;
-        $this->score = $score;
-        $this->maxScore = $maxScore;
-        $this->percentage = $percentage;
-    }
+    public $timeTaken;
 
+public function __construct($student, $quiz, $score, $maxScore, $percentage, $timeTaken = null)
+{
+    $this->student = $student;
+    $this->quiz = $quiz;
+    $this->score = $score;
+    $this->maxScore = $maxScore;
+    $this->percentage = $percentage;
+    $this->timeTaken = $timeTaken;
+}
     public function build()
     {
         return $this->subject('Your Quiz Score: ' . $this->quiz->title)

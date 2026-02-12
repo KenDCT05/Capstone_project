@@ -17,10 +17,12 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
-    public function students()
-    {
-    return $this->belongsToMany(User::class, 'student_teacher', 'teacher_id', 'student_id');
-    }
+public function students()
+{
+    return $this->belongsToMany(User::class, 'subject_user', 'subject_id', 'user_id')
+                ->where('role', 'student')
+                ->withTimestamps(); // ✅ add this
+}
 
     public function teachers()
     {
@@ -33,20 +35,25 @@ class User extends Authenticatable
     }
 
     protected $fillable = [
-    'name',
-    'email',
-    'password',
-    'role',
-    'birthday',
-    'gender',
-    'grade_level',
-    'section',
-    'guardian_name',
-    'guardian_email',
-    'guardian_contact',
-    'contact_number',
-     'first_login',
-];
+        'user_id',
+        'name',
+        'first_name',
+        'last_name',
+        'middle_initial',
+        'email',
+        'password',
+        'role',
+        'is_active',
+        'gender',
+        'guardian_name',
+        'guardian_first_name',
+        'guardian_last_name',
+        'guardian_middle_initial',
+        'guardian_email',
+        'guardian_contact',
+        'contact_number',
+        'first_login',
+    ];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -70,6 +77,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password_changed_at' => 'datetime',
         'password' => 'hashed',
+        'is_active' => 'boolean',
     ];
 }
 public function scores()
@@ -78,6 +86,50 @@ public function scores()
 }
 public function subjects()
 {
-    return $this->belongsToMany(Subject::class, 'subject_user', 'user_id', 'subject_id');
+    return $this->belongsToMany(Subject::class, 'subject_user', 'user_id', 'subject_id')
+                ->withTimestamps(); // ✅ add this
 }
+    // Auto-generate user_id when creating user
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->user_id)) {
+                $user->user_id = self::generateUserId($user->role);
+            }
+            
+            // Auto-generate full name from parts
+            if (empty($user->name) && !empty($user->first_name) && !empty($user->last_name)) {
+                $user->name = $user->last_name . ', ' . $user->first_name . ' ' . ($user->middle_initial ?? '');
+            }
+            
+            // Auto-generate guardian full name
+            if (empty($user->guardian_name) && !empty($user->guardian_first_name) && !empty($user->guardian_last_name)) {
+                $user->guardian_name = $user->guardian_last_name . ', ' . $user->guardian_first_name . ' ' . ($user->guardian_middle_initial ?? '');
+            }
+        });
+    }
+
+    // Generate unique user ID
+    public static function generateUserId($role)
+    {
+        $prefix = ($role === 'student') ? 'SGSSM' : 'TGSSM';
+        
+        // Get the last user ID with this prefix
+        $lastUser = self::where('user_id', 'LIKE', $prefix . '%')
+            ->orderBy('user_id', 'desc')
+            ->first();
+        
+        $nextNumber = 1;
+        
+        if ($lastUser) {
+            // Extract the number part (after prefix)
+            $lastNumber = intval(substr($lastUser->user_id, strlen($prefix)));
+            $nextNumber = $lastNumber + 1;
+        }
+        
+        // Format: SGSSM000001 or TGSSM000001
+        return $prefix . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
 }

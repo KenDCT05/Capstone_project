@@ -51,5 +51,6 @@ class Material extends Model
     {
         return $this->submissions()->where('student_id', $studentId)->first();
     }
+    protected $dates = ['due_date', 'created_at', 'updated_at'];
 }
 

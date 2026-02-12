@@ -10,12 +10,14 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+       @vite(['resources/css/app.css', 'resources/js/app.js'])
+
 
     <style>
         /* Custom red-maroon theme styles */
         .bg-red-maroon-gradient {
-            background: linear-gradient(135deg, #8B1538 0%, #B91C1C 30%, #DC2626 70%, #EF4444 100%);
+            background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 50%, #fdf2f8 100%);
+            /* background: linear-gradient(135deg, #8B1538 0%, #B91C1C 30%, #DC2626 70%, #EF4444 100%); */
         }
 
         .bg-soft-maroon {
@@ -89,5 +91,53 @@
     </div>
 
     @stack('scripts')
+<script>
+    let startTime = Date.now();
+let isActive = true;
+
+// Track when user becomes inactive
+document.addEventListener('visibilitychange', function() {
+    if (document.hidden) {
+        isActive = false;
+        logTimeSpent();
+    } else {
+        startTime = Date.now();
+        isActive = true;
+    }
+});
+
+// Log time when user leaves page
+window.addEventListener('beforeunload', function() {
+    if (isActive) {
+        logTimeSpent();
+    }
+});
+
+// Send time spent to server every 5 minutes for active users
+setInterval(function() {
+    if (isActive) {
+        logTimeSpent();
+        startTime = Date.now(); // Reset timer
+    }
+}, 1 * 60 * 1000); // 5 minutes
+
+function logTimeSpent() {
+    const timeSpent = Math.round((Date.now() - startTime) / 1000); // in seconds
+    
+    if (timeSpent > 10) { // Only log if more than 10 seconds
+        fetch('/log-time-spent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            body: JSON.stringify({
+                time_spent: timeSpent,
+                page: window.location.pathname
+            })
+        }).catch(err => console.log('Time logging failed:', err));
+    }
+}
+</script>
 </body>
 </html>

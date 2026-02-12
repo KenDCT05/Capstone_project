@@ -11,10 +11,16 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        // ✅ Register your custom route middleware alias here
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class,
+            'password.changed' => \App\Http\Middleware\EnsurePasswordChanged::class,
+
         ]);
+        $middleware->web(append: [
+                \App\Http\Middleware\EnsurePasswordChanged::class,
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

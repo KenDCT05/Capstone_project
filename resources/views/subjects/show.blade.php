@@ -4,7 +4,7 @@
             
             <!-- Subject Header -->
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 mb-8 overflow-hidden">
-                <div class="bg-gradient-to-r from-red-800 to-red-900 px-8 py-6">
+                <div class="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 px-8 py-6">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center">
                             <div class="w-16 h-16 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-6">
@@ -81,7 +81,7 @@
 
             <!-- Students Section -->
             <div class="bg-white rounded-2xl shadow-xl border border-red-100 overflow-hidden">
-                <div class="bg-gradient-to-r from-red-700 to-red-800 px-8 py-4">
+                <div class="bg-gradient-to-r from-red-600 via-red-700 to-rose-700 px-8 py-4">
                     <h3 class="text-2xl font-bold text-white flex items-center">
                         <svg class="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
@@ -97,17 +97,36 @@
                     @forelse ($subject->students as $student)
                         <div class="group bg-gradient-to-r from-red-50 to-red-100 border border-red-200 rounded-xl p-6 mb-4 hover:shadow-lg transition-all duration-300 hover:border-red-300">
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-4">
+                                <div class="flex items-center space-x-4 flex-1">
                                     <!-- Student Avatar -->
-                                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg">
+                                    <div class="w-12 h-12 bg-gradient-to-br from-red-600 to-red-700 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
                                         <span class="text-white font-bold text-lg">
                                             {{ strtoupper(substr($student->name, 0, 1)) }}
                                         </span>
                                     </div>
                                     
                                     <!-- Student Info -->
-                                    <div>
-                                        <h4 class="text-lg font-semibold text-red-900">{{ $student->name }}</h4>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3">
+                                            <h4 class="text-lg font-semibold text-red-900">{{ $student->name }}</h4>
+                                            
+                                            <!-- Account Status Badge -->
+                                            @if($student->is_active)
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Active Account
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 border border-gray-200">
+                                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
+                                                    </svg>
+                                                    Deactivated Account
+                                                </span>
+                                            @endif
+                                        </div>
                                         <p class="text-red-600 flex items-center mt-1">
                                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>

@@ -4,7 +4,6 @@
         
         .dashboard-container {
             font-family: 'Nunito', sans-serif;
-            background: linear-gradient(135deg, #8B0000 0%, #DC143C 50%, #B22222 100%);
             min-height: 100vh;
             padding: 2rem;
         }
@@ -21,7 +20,7 @@
 
         .dashboard-subtitle {
             font-size: 1.5rem;
-            color: #FFE4E1;
+            color: #000000;
             text-align: center;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             margin-bottom: 3rem;
@@ -47,7 +46,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
-            color: #8B0000;
+            color: black;
             font-weight: 800;
             font-size: 1.2rem;
             min-width: 200px;
@@ -62,6 +61,7 @@
         .action-btn svg {
             width: 4rem;
             height: 4rem;
+            color: #cf0505;
             margin-bottom: 1rem;
             animation: wiggle 2s infinite;
         }
@@ -84,7 +84,7 @@
             transition: all 0.4s ease;
             border: 5px solid transparent;
             text-decoration: none;
-            color: inherit;
+            color: black;
             position: relative;
             overflow: hidden;
         }
@@ -147,7 +147,7 @@
         .card-title {
             font-family: 'Fredoka One', cursive;
             font-size: 2.5rem;
-            color: #8B0000;
+            color: red;
             margin-bottom: 1rem;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
@@ -270,13 +270,15 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-
-                    <a href="{{ route('student.subjects.index') }}" class="action-btn">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"/>
-                        </svg>
+                     <a href="{{ route('student.subjects.index') }}" class="action-btn bg-[#FBD15F] hover:bg-[#f5c948] transition-colors">
+                          
+                                <svg fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    <path d="M21 10h-2v2h-2v2h2v2h2v-2h2v-2h-2v-2z" opacity="0.9"/>
+                                </svg>
+                 
                         Join My Class!
-                    </a>
+                    </a> 
                 </div>
 
                 <!-- Learning Cards Grid -->
@@ -289,7 +291,7 @@
                             </svg>
                         </div>
                         <h3 class="card-title">My Books!</h3>
-                        <p class="card-description">Find all my cool learning stuff here! 📖</p>
+                        <p class="card-description">Find all my cool learning stuff here! </p>
                     </a>
 
                     <!-- Quiz Card -->
@@ -300,7 +302,7 @@
                             </svg>
                         </div>
                         <h3 class="card-title">Fun Quiz!</h3>
-                        <p class="card-description">Play games and show what I know! 🎮</p>
+                        <p class="card-description">Play games and show what I know! </p>
                     </a>
 
                     <!-- Grades Card -->
@@ -312,7 +314,7 @@
                             </svg>
                         </div>
                         <h3 class="card-title">My Stars!</h3>
-                        <p class="card-description">See how awesome I'm doing! ⭐</p>
+                        <p class="card-description">See how awesome I'm doing! </p>
                     </a>
                 </div>
             </div>

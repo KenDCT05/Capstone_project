@@ -22,77 +22,69 @@
 
                 <!-- Form Section -->
                 <div class="p-8">
-                    <form action="{{ route('subjects.store') }}" method="POST" class="space-y-6">
+                    <form action="{{ route('subjects.store') }}" method="POST">
                         @csrf
 
-                        <!-- Subject Name Field -->
-                        <div class="group">
-                            <label class="block text-sm font-semibold text-red-800 mb-2 flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                                </svg>
-                                Subject Name
-                                <span class="text-red-500 ml-1">*</span>
-                            </label>
-                            <div class="relative">
-                                <input 
-                                    type="text" 
-                                    name="name" 
-                                    class="w-full border-2 border-red-200 rounded-xl px-4 py-3 text-red-900 placeholder-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-200 bg-red-50 focus:bg-white" 
-                                    placeholder="Enter subject name (e.g., Mathematics 101)"
-                                    required
-                                >
-                                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                    </svg>
-                                </div>
-                            </div>
+                        <!-- Year Level Dropdown -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-red-800 mb-2">Year Level</label>
+                            <select id="year_level" required
+                                    class="w-full border-2 border-red-200 rounded-xl px-4 py-3 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">Select Year Level</option>
+                                <option value="1">Grade 1</option>
+                                <option value="2">Grade 2</option>
+                                <option value="3">Grade 3</option>
+                                <option value="4">Grade 4</option>
+                                <option value="5">Grade 5</option>
+                                <option value="6">Grade 6</option>
+                                <option value="7">Grade 7</option>
+                            </select>
                         </div>
 
-                        <!-- Description Field -->
-                        <div class="group">
-                            <label class="block text-sm font-semibold text-red-800 mb-2 flex items-center">
-                                <svg class="w-4 h-4 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
-                                </svg>
-                                Description
-                                <span class="text-red-400 text-xs ml-2">(Optional)</span>
-                            </label>
-                            <div class="relative">
-                                <textarea 
-                                    name="description" 
-                                    rows="4" 
-                                    class="w-full border-2 border-red-200 rounded-xl px-4 py-3 text-red-900 placeholder-red-400 focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-200 bg-red-50 focus:bg-white resize-none"
-                                    placeholder="Provide a brief description of the subject, its objectives, or any relevant information..."
-                                ></textarea>
-                                <div class="absolute top-3 right-3 pointer-events-none">
-                                    <svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                </div>
-                            </div>
+                        <!-- Section Dropdown (will be populated dynamically) -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-red-800 mb-2">Section</label>
+                            <select id="section" required
+                                    class="w-full border-2 border-red-200 rounded-xl px-4 py-3 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                    disabled>
+                                <option value="">Select Year Level First</option>
+                            </select>
                         </div>
 
-                        <!-- Form Actions -->
-                        <div class="flex items-center justify-between pt-6 border-t border-red-100">
-                            <a href="{{ route('subjects.index') }}" class="inline-flex items-center px-4 py-2 text-red-600 hover:text-red-800 font-medium transition-colors duration-200">
-                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                                </svg>
-                                Back to Subjects
-                            </a>
-                            
-                            <button 
-                                type="submit" 
-                                class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-700 to-red-800 hover:from-red-800 hover:to-red-900 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5 focus:ring-4 focus:ring-red-200"
-                            >
-                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                                </svg>
-                                Create Subject
-                            </button>
+                        <!-- Subject Dropdown -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-semibold text-red-800 mb-2">Subject</label>
+                            <select id="subject" required
+                                    class="w-full border-2 border-red-200 rounded-xl px-4 py-3 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent">
+                                <option value="">Select Subject</option>
+                                @foreach($subjects as $subject)
+                                    <option value="{{ $subject->name }}">{{ $subject->name }}</option>
+                                @endforeach
+                            </select>
                         </div>
+
+                        <!-- Hidden input for final combined name -->
+                        <input type="hidden" name="name" id="subject_name" required>
+
+                        <!-- Live Preview -->
+                        <div class="mb-6 p-4 bg-gradient-to-r from-red-50 to-orange-50 rounded-xl border-2 border-red-200">
+                            <span class="block text-xs font-semibold text-red-800 mb-1">FINAL SUBJECT NAME:</span>
+                            <span id="preview_text" class="text-lg text-gray-400 italic">Please select all fields above</span>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-semibold text-red-800 mb-2">Description (Optional)</label>
+                            <textarea name="description" rows="3"
+                                      class="w-full border-2 border-red-200 rounded-xl px-4 py-3 bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                                      placeholder="Add a brief description of this subject..."></textarea>
+                        </div>
+
+                        <!-- Submit -->
+                        <button type="submit" id="submit_btn" disabled
+                                class="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-3 px-4 rounded-xl shadow-md hover:scale-105 transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100">
+                            Create Subject
+                        </button>
                     </form>
                 </div>
 
@@ -117,4 +109,79 @@
             </div>
         </div>
     </div>
+
+    <!-- Script to handle dynamic sections and combine fields -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const yearLevelSelect = document.getElementById('year_level');
+            const sectionSelect = document.getElementById('section');
+            const subjectSelect = document.getElementById('subject');
+            const subjectNameInput = document.getElementById('subject_name');
+            const previewText = document.getElementById('preview_text');
+            const submitBtn = document.getElementById('submit_btn');
+
+            // All sections data passed from backend
+            const allSections = @json($sections);
+
+            // When year level changes, populate sections
+            yearLevelSelect.addEventListener('change', function() {
+                const selectedYearLevel = parseInt(this.value);
+                
+                // Clear current section options
+                sectionSelect.innerHTML = '<option value="">Select Section</option>';
+                
+                if (selectedYearLevel) {
+                    // Filter sections by year level
+                    const filteredSections = allSections.filter(section => 
+                        section.year_level === selectedYearLevel
+                    );
+                    
+                    if (filteredSections.length > 0) {
+                        // Enable and populate section dropdown
+                        sectionSelect.disabled = false;
+                        filteredSections.forEach(section => {
+                            const option = document.createElement('option');
+                            option.value = section.name;
+                            option.textContent = section.name;
+                            sectionSelect.appendChild(option);
+                        });
+                    } else {
+                        // No sections for this grade
+                        sectionSelect.disabled = true;
+                        sectionSelect.innerHTML = '<option value="">No sections available for this grade</option>';
+                    }
+                } else {
+                    // No year level selected
+                    sectionSelect.disabled = true;
+                    sectionSelect.innerHTML = '<option value="">Select Year Level First</option>';
+                }
+                
+                updateSubjectName();
+            });
+
+            function updateSubjectName() {
+                const yearLevel = yearLevelSelect.value;
+                const section = sectionSelect.value;
+                const subject = subjectSelect.value;
+                
+                if (yearLevel && section && subject) {
+                    const finalName = yearLevel + ' - ' + section + ' - ' + subject;
+                    subjectNameInput.value = finalName;
+                    previewText.textContent = finalName;
+                    previewText.classList.remove('text-gray-400', 'italic', 'text-lg');
+                    previewText.classList.add('text-red-900', 'font-bold', 'text-xl');
+                    submitBtn.disabled = false;
+                } else {
+                    subjectNameInput.value = '';
+                    previewText.textContent = 'Please select all fields above';
+                    previewText.classList.remove('text-red-900', 'font-bold', 'text-xl');
+                    previewText.classList.add('text-gray-400', 'italic', 'text-lg');
+                    submitBtn.disabled = true;
+                }
+            }
+
+            sectionSelect.addEventListener('change', updateSubjectName);
+            subjectSelect.addEventListener('change', updateSubjectName);
+        });
+    </script>
 </x-app-layout>

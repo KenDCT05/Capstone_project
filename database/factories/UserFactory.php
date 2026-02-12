@@ -31,7 +31,15 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
-
+public function teacher(): static
+{
+    return $this->state(fn (array $attributes) => [
+        'role' => 'teacher',
+        'first_login' => 0,
+        'contact_number' => '09' . rand(100000000, 999999999),
+        'password' => Hash::make('GSSM2025'),
+    ]);
+}
     /**
      * Indicate that the model's email address should be unverified.
      */

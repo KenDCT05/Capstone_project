@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Subject;
 use App\Models\Score;
+use App\Models\Subject;
 use App\Models\MaxScore;
+use Illuminate\Http\Request;
 
 class GradebookAdminController extends Controller
 {

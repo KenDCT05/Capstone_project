@@ -329,6 +329,22 @@
         {{-- Form Side --}}
         <div class="form-side">
             <div class="form-container">
+                    <!-- Session Status -->
+<x-auth-session-status class="mb-4" :status="session('status')" />
+
+<!-- Error Messages -->
+@if ($errors->any())
+    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+    @if(session('info'))
+        <div class="info-message">
+            {{ session('info') }}
+        </div>
+    @endif
                 <div class="auth-card">
                     {{ $slot }}
                 </div>

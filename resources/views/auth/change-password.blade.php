@@ -1,3 +1,4 @@
+
 <x-guest-layout>
     <style>
         .login-header {
@@ -46,6 +47,69 @@
             background: #22c55e;
         }
 
+        .info-message {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #93c5fd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .info-message::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #3b82f6;
+        }
+
+        .validation-error {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            padding: 1rem 1.25rem;
+            border-radius: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: 1px solid #fca5a5;
+            position: relative;
+            overflow: hidden;
+            display: none;
+        }
+
+        .validation-error.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .validation-error::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: #dc2626;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .form-group {
             margin-bottom: 1.5rem;
         }
@@ -83,8 +147,13 @@
             transform: translateY(-1px);
         }
 
-        .form-input:focus + .input-label {
-            color: #dc2626;
+        .form-input.is-invalid {
+            border-color: #ef4444;
+        }
+
+        .form-input.is-invalid:focus {
+            border-color: #ef4444;
+            box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
         }
 
         .form-input::placeholder {
@@ -92,7 +161,6 @@
             font-weight: 400;
         }
 
-        /* Password input with eye icon */
         .password-input {
             padding-right: 3.5rem;
         }
@@ -140,7 +208,6 @@
             font-size: 1rem;
         }
 
-        /* Password Strength Meter */
         .strength-meter {
             height: 6px;
             background: #f3f4f6;
@@ -163,59 +230,58 @@
             transition: color 0.3s ease;
         }
 
-        /* Password Requirements */
-        .requirements-box {
-            margin-top: 1rem;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 1rem;
-            border: 1px solid #e2e8f0;
-        }
+.requirements-box {
+    margin-top: 1rem;          /* smaller spacing above */
+    padding: 0.75rem 1rem;     /* reduce padding */
+    background: #f9fafb;
+    border-radius: 0.75rem;
+    border: 1px solid #e5e7eb;
+    max-width: 280px;          /* limits width */
+}
 
-        .requirements-title {
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #4b5563;
-            margin-bottom: 0.75rem;
-        }
+.requirements-title {
+    font-size: 0.7rem;         /* slightly smaller text */
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 0.5rem;     /* tighter spacing */
+}
 
-        .requirement-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.75rem;
-            color: #6b7280;
-            transition: all 0.3s ease;
-        }
+.requirement-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.3rem;     /* less gap between lines */
+    font-size: 0.7rem;
+    color: #6b7280;
+    line-height: 1.2;          /* compact line height */
+}
 
-        .requirement-item:last-child {
-            margin-bottom: 0;
-        }
+.requirement-item:last-child {
+    margin-bottom: 0;
+}
 
-        .requirement-icon {
-            width: 1rem;
-            height: 1rem;
-            margin-right: 0.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.625rem;
-            transition: all 0.3s ease;
-        }
+.requirement-icon {
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-right: 0.4rem;
+    border: 1px solid #d1d5db;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+}
 
-        .requirement-met {
-            color: #10b981;
-        }
+.requirement-met {
+    color: #10b981;
+}
 
-        .requirement-met .requirement-icon {
-            background: #10b981;
-            color: white;
-            border-color: #10b981;
-        }
+.requirement-met .requirement-icon {
+    background: #10b981;
+    color: white;
+    border-color: #10b981;
+}
 
-        /* Match indicator */
+
         .match-text {
             font-size: 0.75rem;
             margin-top: 0.5rem;
@@ -223,7 +289,6 @@
             transition: color 0.3s ease;
         }
 
-        /* Button styling */
         .button-container {
             display: flex;
             flex-direction: column;
@@ -246,9 +311,11 @@
             overflow: hidden;
             text-transform: uppercase;
             letter-spacing: 0.025em;
-            text-decoration: none;
-            text-align: center;
-            display: inline-block;
+        }
+
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .login-btn::before {
@@ -262,21 +329,16 @@
             transition: left 0.5s ease;
         }
 
-        .login-btn:hover {
+        .login-btn:hover:not(:disabled) {
             background: linear-gradient(135deg, #991b1b, #7f1d1d, #dc2626);
             transform: translateY(-2px);
             box-shadow: 0 10px 25px -5px rgba(220, 38, 38, 0.4);
         }
 
-        .login-btn:hover::before {
+        .login-btn:hover:not(:disabled)::before {
             left: 100%;
         }
 
-        .login-btn:active {
-            transform: translateY(0px);
-        }
-
-        /* Secondary button style */
         .secondary-btn {
             background: linear-gradient(135deg, #6b7280, #4b5563);
             color: white;
@@ -301,11 +363,6 @@
             box-shadow: 0 8px 20px -5px rgba(107, 114, 128, 0.4);
         }
 
-        .secondary-btn:active {
-            transform: translateY(0px);
-        }
-
-        /* Side-by-side buttons on larger screens */
         @media (min-width: 480px) {
             .button-container {
                 flex-direction: row;
@@ -318,7 +375,6 @@
             }
         }
 
-        /* Responsive Design */
         @media (max-width: 1024px) {
             .login-header h1 {
                 font-size: 2rem;
@@ -355,7 +411,11 @@
         </div>
     @endif
 
-    <form method="POST" action="{{ route('change-password.update') }}">
+
+
+    <div id="validationError" class="validation-error"></div>
+
+  <form method="POST" action="{{ route('change-password.update') }}" id="passwordForm">
         @csrf
         @method('PUT')
 
@@ -366,27 +426,22 @@
                     id="password" 
                     name="password" 
                     type="password" 
-                    class="form-input password-input text-black" 
+                    class="form-input password-input text-black @error('password') is-invalid @enderror" 
                     required 
                     placeholder="Enter your new password"
                     oninput="checkPasswordStrength(this.value)"
+                    autocomplete="new-password"
                 >
                 <button type="button" class="password-toggle" onclick="togglePassword('password')">
-                    <svg id="eye-password" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg id="eye-password" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                 </button>
             </div>
             
-            <!-- Password Strength Meter -->
-            <div class="strength-meter">
-                <div id="strengthBar" class="strength-fill" style="width: 0%; background-color: #d1d5db;"></div>
-            </div>
-            <p id="strengthText" class="strength-text">Password strength will be shown here</p>
+
             
-            <!-- Password Requirements -->
-  
             @error('password')
                 <div class="error-message">{{ $message }}</div>
             @enderror
@@ -399,13 +454,14 @@
                     id="password_confirmation" 
                     name="password_confirmation" 
                     type="password" 
-                    class="form-input password-input text-black" 
+                    class="form-input password-input text-black @error('password_confirmation') is-invalid @enderror" 
                     required 
                     placeholder="Confirm your new password"
                     oninput="checkPasswordMatch()"
+                    autocomplete="new-password"
                 >
                 <button type="button" class="password-toggle" onclick="togglePassword('password_confirmation')">
-                    <svg id="eye-password_confirmation" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg id="eye-password_confirmation" xmlns="http://www.w.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
@@ -415,36 +471,49 @@
             @error('password_confirmation')
                 <div class="error-message">{{ $message }}</div>
             @enderror
+                            <div class="strength-meter">
+                <div id="strengthBar" class="strength-fill" style="width: 0%; background-color: #d1d5db;"></div>
+            </div>
         </div>
 
-        <div class="button-container">
-            <button type="submit" class="login-btn">
-                Change Password
+    </form> <div class="button-container">
+    <button type="submit" class="login-btn" id="submitBtn" form="passwordForm">
+        Change Password
+    </button>
+
+    @if(!auth()->user()->first_login)
+        <a href="{{ url('/') }}" class="secondary-btn">
+            Go Back
+        </a>
+    @else
+        <form method="POST" action="{{ route('logout') }}" style="flex: 1; margin: 0;">
+            @csrf
+            <button type="submit" class="secondary-btn" style="margin: 0;">
+                Logout
             </button>
-            <a href="{{ url()->previous() }}" class="secondary-btn">
-                Go Back
-            </a>
-        </div>
-    </form>
+        </form>
+    @endif
+</div>
 
-    <!-- Password Requirements -->
+
+
     <div class="requirements-box">
-        <p class="requirements-title">Password Requirements:</p>
+        <p class="requirements-title">Strong Password Requirements:</p>
         <div class="requirement-item" id="req-length">
             <span class="requirement-icon">✓</span>
             At least 8 characters
         </div>
         <div class="requirement-item" id="req-uppercase">
             <span class="requirement-icon">✓</span>
-            One uppercase letter
+            One uppercase letter (A-Z)
         </div>
         <div class="requirement-item" id="req-lowercase">
             <span class="requirement-icon">✓</span>
-            One lowercase letter
+            One lowercase letter (a-z)
         </div>
         <div class="requirement-item" id="req-number">
             <span class="requirement-icon">✓</span>
-            One number
+            One number (0-9)
         </div>
     </div>
 
@@ -470,6 +539,7 @@
         function checkPasswordStrength(password) {
             const strengthBar = document.getElementById('strengthBar');
             const strengthText = document.getElementById('strengthText');
+            const submitBtn = document.getElementById('submitBtn');
             
             const requirements = {
                 length: password.length >= 8,
@@ -478,7 +548,6 @@
                 number: /[0-9]/.test(password)
             };
             
-            // Update requirement indicators
             Object.keys(requirements).forEach(req => {
                 const element = document.getElementById(`req-${req}`);
                 if (requirements[req]) {
@@ -489,6 +558,8 @@
             });
             
             const score = Object.values(requirements).filter(Boolean).length;
+            const allMet = score === 4;
+            
             let strength, color, width;
             
             switch (score) {
@@ -519,12 +590,15 @@
             strengthBar.style.width = width;
             strengthText.textContent = `Password strength: ${strength}`;
             strengthText.style.color = color;
+            
+            checkPasswordMatch();
         }
 
         function checkPasswordMatch() {
             const password = document.getElementById('password').value;
             const confirmation = document.getElementById('password_confirmation').value;
             const matchText = document.getElementById('matchText');
+            const submitBtn = document.getElementById('submitBtn');
             
             if (confirmation === '') {
                 matchText.textContent = '';
@@ -539,5 +613,40 @@
                 matchText.style.color = '#ef4444';
             }
         }
+
+        // Form validation before submit
+        document.getElementById('passwordForm').addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirmation = document.getElementById('password_confirmation').value;
+            const validationError = document.getElementById('validationError');
+            
+            // Hide previous errors
+            validationError.classList.remove('show');
+            
+            const requirements = {
+                length: password.length >= 8,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password)
+            };
+            
+            const allMet = Object.values(requirements).every(Boolean);
+            
+            if (!allMet) {
+                e.preventDefault();
+                validationError.textContent = ' Please ensure your password meets all the requirements listed below.';
+                validationError.classList.add('show');
+                validationError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return false;
+            }
+            
+            if (password !== confirmation) {
+                e.preventDefault();
+                validationError.textContent = ' Passwords do not match. Please check and try again.';
+                validationError.classList.add('show');
+                validationError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                return false;
+            }
+        });
     </script>
 </x-guest-layout>

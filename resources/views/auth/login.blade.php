@@ -1,4 +1,5 @@
 <x-guest-layout>
+
     <style>
         .login-header {
             text-align: center;
@@ -124,20 +125,7 @@
             height: 1.25rem;
         }
 
-        .error-message {
-            color: #dc2626;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-top: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
 
-        .error-message::before {
-            content: '⚠';
-            font-size: 1rem;
-        }
 
         .checkbox-group {
             display: flex;
@@ -353,9 +341,6 @@
                     autocomplete="email"
                 >
             </div>
-            @error('email')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
         </div>
 
         <div class="form-group">
@@ -380,9 +365,7 @@
                     </svg>
                 </button>
             </div>
-            @error('password')
-                <div class="error-message">{{ $message }}</div>
-            @enderror
+
         </div>
 
         <div class="checkbox-group">
